@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { HashRouter as Router } from 'react-router-dom';
+import UnauthenticatedContent from "./UnauthenticatedContent";
+import { NavigationProvider } from "./contexts/navigation";
+import { AuthProvider, useAuth } from './contexts/auth';
+import Content from './Content';
+import '@/pages/login/LoginView.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const useAxiosInterceptor = () => {
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
 }
 
-export default App
+  function App() {
+	const { user } = useAuth();
+
+	// Configurar los interceptores de Axios al cargar la app
+	useAxiosInterceptor();
+
+	if (user) {
+		return (
+			<div className="flex">
+				<Content />
+			</div>
+		);
+	}
+
+	return <UnauthenticatedContent />;
+}
+
+export default function Root() {
+
+
+
+	return (
+		<Router>
+			<AuthProvider>
+				<NavigationProvider>
+					<>
+						<div className="light x1"></div>
+						<div className="light x2"></div>
+						<div className="light x3"></div>
+						<div className="light x4"></div>
+						<div className="light x5"></div>
+						<div className="light x6"></div>
+						<div className="light x7"></div>
+						<div className="light x8"></div>
+						<div className="light x9"></div>
+						<div className='flex items-center justify-center h-screen w-screen bg-gradient-to-b from-secondary to-tertiary'>
+							<App />
+						</div>
+					</>
+				</NavigationProvider>
+			</AuthProvider>
+		</Router>
+	);
+}
