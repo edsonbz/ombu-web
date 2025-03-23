@@ -1,8 +1,13 @@
-import './App.css'
-import { Routing } from './routes'
+import './App.css';
+import { AuthProvider } from './context/auth';
+import { Routing } from './routes';
 
 function App() {
-  return <Routing />
+  return (
+    <AuthProvider>
+      <Routing />
+    </AuthProvider>
+  );
 }
 
 export default App;
