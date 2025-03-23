@@ -7,11 +7,14 @@ WORKDIR /app
 # Copia los archivos package.json y package-lock.json para instalar las dependencias
 COPY package.json package-lock.json ./
 
-# Instala las dependencias de producción
-RUN npm install --production
+# Instala todas las dependencias (incluyendo las de desarrollo)
+RUN npm install
 
 # Copia el resto de los archivos del proyecto al contenedor
 COPY . .
+
+# Verifica las versiones de node, npm y vite
+RUN node -v && npm -v && npx vite --version
 
 # Construye la aplicación para producción
 RUN npm run build
