@@ -1,6 +1,5 @@
+import NavBarContentView from "@/pages/Navbar/NavBarContentView";
 import { ReactNode } from "react";
-import { SidebarProvider } from "./sidebar";
-import { SideBarContentView } from "../../pages/SideBar/SideBarContentView";
 
 interface LayoutProps {
   children: ReactNode;
@@ -8,11 +7,9 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <SidebarProvider className="flex h-screen">
-      <SideBarContentView/>
-      <main className="flex-1 p-4">
-        {children}
-      </main>
-    </SidebarProvider>
+    <div className="min-h-screen flex flex-col">
+      <NavBarContentView />
+      <main className="flex-1 p-6">{children}</main>
+    </div>
   );
 };
