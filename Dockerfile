@@ -11,8 +11,8 @@ RUN npm run build
 FROM node:20-alpine
 
 WORKDIR /app
-COPY --from=builder /app /app
-RUN npm install -g vite
+RUN npm install -g serve
+COPY --from=builder /app/dist /app/dist
 
 EXPOSE 4173
-CMD ["vite", "preview", "--host", "--port", "4173"]
+CMD ["serve", "-s", "dist", "-l", "4173"]
