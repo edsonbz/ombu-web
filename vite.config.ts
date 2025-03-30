@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from "path"
-import tailwindcss from "@tailwindcss/vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      crypto: "crypto-browserify", // Polyfill para resolver el problema de crypto.getRandomValues
     },
   },
   server: {
@@ -19,5 +19,8 @@ export default defineConfig({
         secure: false,                      // Desactiva SSL si usas HTTP local
       },
     },
+  },
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"), // Define el entorno de producción
   },
 })

@@ -1,6 +1,8 @@
 export async function login(email: string, password: string) {
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+
     try {
-        const response = await fetch('http://localhost:3000/api/auth/login', {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -9,11 +11,12 @@ export async function login(email: string, password: string) {
         });
 
         if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
+            const errorMessage = await response.text();
+            throw new Error(`Error ${response.status}: ${errorMessage}`);
         }
 
         const data = await response.json();
-        console.log(data);  // El token si es un login exitoso
+        localStorage.setItem('authToken', data.token); // Guarda el token en localStorage
         return data;
     } catch (error) {
         console.error('Error al hacer el login:', error);
