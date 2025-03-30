@@ -15,7 +15,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ChevronRight, CirclePlus, Pencil, Trash } from "lucide-react";
+import { ChevronRight, CirclePlus, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const perfumes = [
