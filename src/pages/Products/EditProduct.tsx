@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { addProduct } from "@/api/products"
 
 type Product = {
   id: string
@@ -19,32 +18,24 @@ type Product = {
   stock: number
 }
 
-type NewProductViewProps = {
+type EditProductViewProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  data: Product
+  onSubmit: (updatedProduct: Product) => void
 }
 
-export function NewProductView({
+export function EditProductView({
   open,
   onOpenChange,
-}: NewProductViewProps) {
-  const [formData, setFormData] = useState<Omit<Product, "id">>({
-    name: "",
-    description: "",
-    price: 0,
-    stock: 0,
-  })
+  data,
+  onSubmit,
+}: EditProductViewProps) {
+  const [formData, setFormData] = useState<Product>(data)
 
   useEffect(() => {
-    if (open) {
-      setFormData({
-        name: "",
-        description: "",
-        price: 0,
-        stock: 0,
-      })
-    }
-  }, [open])
+    setFormData(data)
+  }, [data])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -54,20 +45,10 @@ export function NewProductView({
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
-    const newProduct: Product = {
-      ...formData,
-      id: "", // si el backend asigna el ID
-    }
-
-    try {
-      await addProduct(newProduct)
-      onOpenChange(false)
-    } catch (error) {
-      console.error("Error al agregar el producto:", error)
-    }
+    onSubmit(formData)
+    onOpenChange(false)
   }
 
   return (
@@ -75,7 +56,7 @@ export function NewProductView({
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Agregar Producto</DialogTitle>
+            <DialogTitle>Editar Producto</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -87,7 +68,6 @@ export function NewProductView({
                 value={formData.name}
                 onChange={handleChange}
                 className="col-span-3"
-                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -111,8 +91,6 @@ export function NewProductView({
                 value={formData.price}
                 onChange={handleChange}
                 className="col-span-3"
-                required
-                min={0}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -125,13 +103,11 @@ export function NewProductView({
                 value={formData.stock}
                 onChange={handleChange}
                 className="col-span-3"
-                required
-                min={0}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Agregar Producto</Button>
+            <Button type="submit">Guardar Cambios</Button>
           </DialogFooter>
         </form>
       </DialogContent>
