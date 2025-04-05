@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, CircleAlert, CirclePlus, Pencil, Trash } from "lucide-react";
+import { ChevronRight, CircleAlert, CirclePlus, CloudCog, Pencil, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EditProductView } from "./EditProduct";
 import { NewProductView } from "./NewProductView";
@@ -93,7 +93,7 @@ export function ProductsView() {
 
   if (loading) return <p>Cargando productos...</p>;
   if (error) return <p>Error: {error}</p>;
-
+  console.log(selectedProduct);
   return (
     <div className="bg-tertiary p-4 rounded-lg">
       <div className="flex justify-between items-center gap-1 mb-6">
@@ -145,7 +145,11 @@ export function ProductsView() {
                         <TooltipTrigger asChild>
                           <CircleAlert
                             className="cursor-pointer"
-                            onClick={() => setShowRequestModal(true)} />
+                            onClick={() => {
+                              setSelectedProduct(perfume)
+                              setShowRequestModal(true)
+                            }}
+                          />
                         </TooltipTrigger>
                         <TooltipContent className="bg-secondary text-tertiary">
                           <p>Reponer</p>
@@ -205,7 +209,10 @@ export function ProductsView() {
       <ProductsRequest
         open={showRequestModal}
         onOpenChange={setShowRequestModal}
+        productId={selectedProduct?.id || ""}
+        productName={selectedProduct?.name || ""}
       />
+
     </div>
   );
 }
