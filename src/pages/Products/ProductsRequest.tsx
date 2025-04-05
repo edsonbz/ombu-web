@@ -25,7 +25,7 @@ type NewProductViewProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export function NewProductView({
+export function ProductsRequest({
   open,
   onOpenChange,
 }: NewProductViewProps) {
@@ -60,7 +60,7 @@ export function NewProductView({
 
     const newProduct: Product = {
       ...formData,
-      id: "",
+      id: "", // si el backend asigna el ID
     }
 
     try {
@@ -76,7 +76,7 @@ export function NewProductView({
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader >
-            <DialogTitle className="text-center">Agregar Producto</DialogTitle>
+            <DialogTitle className="text-center">Reponer Producto</DialogTitle>
             <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">

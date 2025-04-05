@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { updateProduct } from "@/api/products"
 
 type Product = {
   id: string
@@ -45,29 +47,37 @@ export function EditProductView({
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
-    onOpenChange(false)
+
+    try {
+      const updated = await updateProduct(formData)
+      onSubmit(updated)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error al actualizar el producto:", error)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Editar Producto</DialogTitle>
+            <DialogTitle className="text-center">Editar Producto</DialogTitle>
+            <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Nombre del producto
+                Nombre
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={handleChange}
                 className="col-span-3"
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -91,6 +101,8 @@ export function EditProductView({
                 value={formData.price}
                 onChange={handleChange}
                 className="col-span-3"
+                required
+                min={0}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -103,11 +115,13 @@ export function EditProductView({
                 value={formData.stock}
                 onChange={handleChange}
                 className="col-span-3"
+                required
+                min={0}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Guardar Cambios</Button>
+            <Button type="submit">CONFIRMAR</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "@/api/products";
+import { getProducts, deleteProduct } from "@/api/products";
 import {
   Table,
   TableBody,
@@ -16,10 +16,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, CirclePlus, Pencil, Trash } from "lucide-react";
+import { ChevronRight, CircleAlert, CirclePlus, Pencil, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EditProductView } from "./EditProduct";
 import { NewProductView } from "./NewProductView";
+import { ProductsRequest } from "./ProductsRequest";
 
 // Formateador de guaraníes
 const formatGs = (value: number) => {
@@ -40,8 +41,9 @@ export function ProductsView() {
   const [perfumes, setPerfumes] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false)  
+  const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const goBack = () => navigate(-1);
@@ -62,9 +64,6 @@ export function ProductsView() {
     fetchProducts();
   }, []);
 
-  const totalStock = perfumes.reduce((sum, p) => sum + p.stock, 0);
-  const totalValue = perfumes.reduce((sum, p) => sum + p.price * p.stock, 0);
-
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setShowEditModal(true);
@@ -74,6 +73,22 @@ export function ProductsView() {
     setPerfumes((prev) =>
       prev.map((p) => (p.id === updated.id ? updated : p))
     );
+  };
+
+  const handleDeleteClick = async (product: Product) => {
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que querés eliminar el producto "${product.name}"?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteProduct(product.id);
+      setPerfumes((prev) => prev.filter((p) => p.id !== product.id));
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+      alert("No se pudo eliminar el producto.");
+    }
   };
 
   if (loading) return <p>Cargando productos...</p>;
@@ -95,7 +110,7 @@ export function ProductsView() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-            <CirclePlus onClick={() => setShowAddModal(true)} />
+              <CirclePlus onClick={() => setShowAddModal(true)} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary text-tertiary">
               <p>Agregar</p>
@@ -112,7 +127,7 @@ export function ProductsView() {
             <TableHead>Descripción</TableHead>
             <TableHead>Precio</TableHead>
             <TableHead>Stock</TableHead>
-            <TableHead></TableHead>
+            <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -121,8 +136,25 @@ export function ProductsView() {
               <TableCell className="font-medium">{perfume.name}</TableCell>
               <TableCell>{perfume.description}</TableCell>
               <TableCell>{formatGs(perfume.price)}</TableCell>
-              <TableCell>{perfume.stock}</TableCell>
-              <TableCell className="flex justify-end gap-x-2">
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  {perfume.stock}
+                  {perfume.stock < 10 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <CircleAlert
+                            className="cursor-pointer"
+                            onClick={() => setShowRequestModal(true)} />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-secondary text-tertiary">
+                          <p>Reponer</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>)}
+                </div>
+              </TableCell>
+              <TableCell className="flex items-center gap-2">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -141,7 +173,7 @@ export function ProductsView() {
                     <TooltipTrigger asChild>
                       <Trash
                         className="cursor-pointer"
-                        onClick={() => handleEditClick(perfume)}
+                        onClick={() => handleDeleteClick(perfume)}
                       />
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary text-tertiary">
@@ -154,12 +186,7 @@ export function ProductsView() {
           ))}
         </TableBody>
         <TableFooter>
-          <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="font-semibold">{formatGs(totalValue)}</TableCell>
-            <TableCell>{totalStock}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
+
         </TableFooter>
       </Table>
 
@@ -171,11 +198,14 @@ export function ProductsView() {
           onSubmit={handleUpdateProduct}
         />
       )}
-       <NewProductView
-  open={showAddModal}
-  onOpenChange={setShowAddModal}
-/>
-
+      <NewProductView
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+      />
+      <ProductsRequest
+        open={showRequestModal}
+        onOpenChange={setShowRequestModal}
+      />
     </div>
   );
 }

@@ -14,19 +14,19 @@ import {
         title: "Productos",
         description: "Gestiona tus productos",
         icon: ShoppingBasket,
-        url: "/productos",
+        url: "/products",
       },
       {
         title: "Proveedores",
         description: "Gestiona tus proveedores",
         icon: ShoppingCart,
-        url: "/proveedores",
+        url: "/suppliers",
       },
       {
         title: "Clientes",
         description: "Gestiona tus clientes",
         icon: Users,
-        url: "/clientes",
+        url: "/clients",
       },
       {
         title: "Órdenes",
