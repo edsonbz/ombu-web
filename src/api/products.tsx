@@ -1,12 +1,8 @@
+import { Product } from "@/types/products"
+
 const BASE_URL = "http://localhost:3000/api/products"
 
-export type Product = {
-  id: string
-  name: string
-  description: string
-  price: number
-  stock: number
-}
+
 
 // Obtener todos los productos
 export async function getProducts(): Promise<Product[]> {

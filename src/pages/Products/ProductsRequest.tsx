@@ -12,18 +12,10 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { getSuppliers } from "@/api/suppliers"
 import { addRestock } from "@/api/restock"
+import { ProductsRequestProps } from "@/types/products"
+import { Supplier } from "@/types/suppliers"
 
-type Supplier = {
-  id: string
-  name: string
-}
 
-type ProductsRequestProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  productId: string
-  productName: string
-}
 
 export function ProductsRequest({
   open,

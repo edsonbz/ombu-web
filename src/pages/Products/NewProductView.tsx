@@ -11,19 +11,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { addProduct } from "@/api/products"
+import { NewProductViewProps, Product } from "@/types/products"
 
-type Product = {
-  id: string
-  name: string
-  description: string
-  price: number
-  stock: number
-}
-
-type NewProductViewProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
 
 export function NewProductView({
   open,

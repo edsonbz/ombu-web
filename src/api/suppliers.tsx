@@ -1,12 +1,6 @@
-const BASE_URL = "http://localhost:3000/api/providers"
+import { Supplier } from "@/types/suppliers"
 
-export type Supplier = {
-  id: string
-  name: string
-  address: string
-  phone: string
-  email: string
-}
+const BASE_URL = "http://localhost:3000/api/providers"
 
 // Obtener todos los proveedores
 export async function getSuppliers(): Promise<Supplier[]> {

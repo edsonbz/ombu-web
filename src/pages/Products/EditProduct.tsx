@@ -11,27 +11,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { updateProduct } from "@/api/products"
-
-type Product = {
-  id: string
-  name: string
-  description: string
-  price: number
-  stock: number
-}
-
-type EditProductViewProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  data: Product
-  onSubmit: (updatedProduct: Product) => void
-}
-
+import { EditProductViewProps, Product } from "@/types/products"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Trash } from "lucide-react"
+import { deleteProduct } from "@/api/products"
 export function EditProductView({
   open,
   onOpenChange,
   data,
   onSubmit,
+  onDelete,
 }: EditProductViewProps) {
   const [formData, setFormData] = useState<Product>(data)
 
@@ -58,7 +52,21 @@ export function EditProductView({
       console.error("Error al actualizar el producto:", error)
     }
   }
+  const handleDeleteClick = async () => {
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que querés eliminar el producto "${data.name}"?`
+    )
+    if (!confirmDelete) return
 
+    try {
+      await deleteProduct(data.id)
+      onDelete(data.id)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error)
+      alert("No se pudo eliminar el producto.")
+    }
+  }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -120,8 +128,22 @@ export function EditProductView({
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex items-center justify-between">
+      
             <Button type="submit">CONFIRMAR</Button>
+            <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Trash
+                        className="cursor-pointer"
+                        onClick={handleDeleteClick}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary text-tertiary">
+                      <p>Borrar</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
           </DialogFooter>
         </form>
       </DialogContent>

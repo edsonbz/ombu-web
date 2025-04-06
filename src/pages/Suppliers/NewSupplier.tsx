@@ -10,19 +10,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { addSupplier } from "@/api/suppliers"
+import { NewSupplierViewProps, Supplier } from "@/types/suppliers"
 
-type Supplier = {
-  id: string
-  name: string
-  address: string
-  phone: string
-  email: string
-}
-
-type NewSupplierViewProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
 
 export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
   const [formData, setFormData] = useState<Omit<Supplier, "id">>({

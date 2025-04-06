@@ -14,19 +14,12 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ChevronRight, CirclePlus, Pencil, Trash } from "lucide-react"
+import { ChevronRight, CirclePlus, Pencil } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { getSuppliers, deleteSupplier } from "@/api/suppliers"
 import { EditSupplier } from "./EditSupplier"
 import { NewSupplier } from "./NewSupplier"
-
-type Supplier = {
-    id: string
-    name: string
-    phone: string
-    email: string
-    address: string
-}
+import { Supplier } from "@/types/suppliers"
 
 export function SuppliersView() {
     const navigate = useNavigate()
@@ -36,7 +29,7 @@ export function SuppliersView() {
     const [showAddModal, setShowAddModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
-    const goBack = () => navigate(-1)
+    const goBack = () => navigate('/home')
 
     useEffect(() => {
         const fetchSuppliers = async () => {
@@ -61,20 +54,19 @@ export function SuppliersView() {
         fetchSuppliers()
     }, [])
 
-    const handleDeleteClick = async (supplier: Supplier) => {
-        const confirmDelete = window.confirm(
-            `¿Seguro que deseas eliminar al proveedor "${supplier.name}"?`
-        )
-        if (!confirmDelete) return
+    const handleDeleteSupplier = async (id: string) => {
+        const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
+        if (!confirmDelete) return;
 
         try {
-            await deleteSupplier(supplier.id)
-            setSuppliers((prev) => prev.filter((s) => s.id !== supplier.id))
-        } catch (error) {
-            console.error("Error al eliminar proveedor:", error)
-            alert("No se pudo eliminar el proveedor.")
+            await deleteSupplier(id);
+            setSuppliers((prev) => prev.filter((s) => s.id !== id));
+            setShowEditModal(false);
+        } catch (err) {
+            console.error("Error al eliminar proveedor:", err);
         }
-    }
+    };
+
 
     if (loading) return <p>Cargando proveedores...</p>
     if (error) return <p>Error: {error}</p>
@@ -103,7 +95,7 @@ export function SuppliersView() {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <CirclePlus className="cursor-pointer" onClick={() => setShowAddModal(true)}/>
+                            <CirclePlus className="cursor-pointer" onClick={() => setShowAddModal(true)} />
                         </TooltipTrigger>
                         <TooltipContent className="bg-secondary text-tertiary">
                             <p>Agregar</p>
@@ -120,7 +112,7 @@ export function SuppliersView() {
                         <TableHead>Dirección</TableHead>
                         <TableHead>Teléfono</TableHead>
                         <TableHead>Email</TableHead>
-                        <TableHead>Acciones</TableHead>
+                        <TableHead></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -134,8 +126,8 @@ export function SuppliersView() {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Pencil className="cursor-pointer" 
-                                            onClick={() => handleEditClick(supplier)}
+                                            <Pencil className="cursor-pointer"
+                                                onClick={() => handleEditClick(supplier)}
                                             />
                                         </TooltipTrigger>
                                         <TooltipContent className="bg-secondary text-tertiary">
@@ -143,19 +135,7 @@ export function SuppliersView() {
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Trash
-                                                className="cursor-pointer"
-                                                onClick={() => handleDeleteClick(supplier)}
-                                            />
-                                        </TooltipTrigger>
-                                        <TooltipContent className="bg-secondary text-tertiary">
-                                            <p>Borrar</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
+
                             </TableCell>
                         </TableRow>
                     ))}
@@ -167,6 +147,7 @@ export function SuppliersView() {
                     onOpenChange={setShowEditModal}
                     data={selectedSupplier}
                     onSubmit={handleUpdateSupplier}
+                    onDelete={handleDeleteSupplier}
                 />
             )}
 

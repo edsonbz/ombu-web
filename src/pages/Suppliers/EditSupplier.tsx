@@ -9,28 +9,22 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { updateSupplier } from "@/api/suppliers"
-
-type Supplier = {
-  id: string
-  name: string
-  address: string
-  phone: string
-  email: string
-}
-
-type EditSupplierProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  data: Supplier
-  onSubmit: (updatedSupplier: Supplier) => void
-}
+import {updateSupplier } from "@/api/suppliers"
+import { EditSupplierProps, Supplier } from "@/types/suppliers"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Trash } from "lucide-react"
 
 export function EditSupplier({
   open,
   onOpenChange,
   data,
   onSubmit,
+  onDelete,
 }: EditSupplierProps) {
   const [formData, setFormData] = useState<Supplier>(data)
 
@@ -57,7 +51,7 @@ export function EditSupplier({
       console.error("Error al actualizar proveedor:", error)
     }
   }
-
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -105,8 +99,22 @@ export function EditSupplier({
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex items-center justify-between">
             <Button type="submit">CONFIRMAR</Button>
+            <TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Trash
+        className="cursor-pointer"
+        onClick={() => onDelete(data.id)}
+      />
+    </TooltipTrigger>
+    <TooltipContent className="bg-secondary text-tertiary">
+      <p>Borrar</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
           </DialogFooter>
         </form>
       </DialogContent>

@@ -5,7 +5,7 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
-  import { Scroll, ShoppingBasket, ShoppingCart, Users } from "lucide-react";
+  import { FileClock, Scroll, ShoppingBasket, ShoppingCart, Users } from "lucide-react";
   import { Link } from "react-router-dom";
   
   export function ServicesCardView() {
@@ -29,10 +29,10 @@ import {
         url: "/clients",
       },
       {
-        title: "Órdenes",
-        description: "Gestiona tus órdenes",
-        icon: ShoppingCart,
-        url: "/ordenes",
+        title: "Órdenes de Reposición",
+        description: "Gestiona tus órdenes de reposición",
+        icon: FileClock,
+        url: "/restocks",
       },
       {
         title: "Facturas",

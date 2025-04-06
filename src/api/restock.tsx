@@ -1,13 +1,9 @@
+import { CreateRestockRequest, RestockRequest } from "@/types/restocks"
+
 const BASE_URL = "http://localhost:3000/api/restock"
 
-export type RestockRequest = {
-  providerId: string
-  productId: string
-  quantity: number
-}
-
 // Crear solicitud de reposición
-export async function addRestock(restock: RestockRequest): Promise<RestockRequest> {
+export async function addRestock(restock: CreateRestockRequest): Promise<RestockRequest> {
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
@@ -23,3 +19,65 @@ export async function addRestock(restock: RestockRequest): Promise<RestockReques
     throw error
   }
 }
+
+//Traer solicitudes de reposición
+export async function getRestocks(): Promise<RestockRequest[]> {
+    try {
+      const res = await fetch(BASE_URL)
+      if (!res.ok) throw new Error("Error al obtener las solicitudes")
+      return await res.json()
+    } catch (error) {
+      console.error("Error en getRestocks:", error)
+      throw error
+    }
+  }
+
+//Eliminar solicitud de reposición
+export async function deleteRestock(id: string): Promise<void> {
+    try {
+      const res = await fetch(`${BASE_URL}/${id}`, {
+        method: "DELETE",
+      })
+  
+      if (!res.ok) throw new Error("Error al eliminar la solicitud")
+    } catch (error) {
+      console.error("Error en deleteRestock:", error)
+      throw error
+    }
+  }
+// Editar solicitud de reposición
+export async function updateRestock(id: string, updated: RestockRequest): Promise<RestockRequest> {
+    try {
+      const res = await fetch(`${BASE_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      })
+  
+      if (!res.ok) throw new Error("Error al actualizar la solicitud")
+  
+      return await res.json()
+    } catch (error) {
+      console.error("Error en updateRestock:", error)
+      throw error
+    }
+  }
+
+// Cambiar estado de la solicitud de reposición
+  export async function changeRestockStatus(id: string, status: "pendiente" | "aprobado" | "rechazado") {
+    try {
+      const res = await fetch(`${BASE_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+  
+      if (!res.ok) throw new Error("Error al cambiar el estado")
+  
+      return await res.json()
+    } catch (error) {
+      console.error("Error en changeRestockStatus:", error)
+      throw error
+    }
+  }
+    

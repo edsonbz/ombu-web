@@ -10,6 +10,7 @@ import HomeView from "../pages/Home/HomeView";
 import { Layout } from "../components/ui/Layout";
 import { ProductsView } from "@/pages/Products/ProductsView";
 import { SuppliersView } from "@/pages/Suppliers/SuppliersView";
+import { RestockView } from "@/pages/Restock/RestockView";
 
 
 export function Routing() {
@@ -21,6 +22,7 @@ export function Routing() {
                     <Route path="/home" element={<HomeView />} />
                     <Route path="/products" element={<ProductsView/>} />
                     <Route path="/suppliers" element={<SuppliersView/>} />
+                    <Route path="/restocks" element={<RestockView/>} />
                 </Route>
             </Routes>
         </BrowserRouter>

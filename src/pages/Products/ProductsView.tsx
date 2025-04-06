@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts, deleteProduct } from "@/api/products";
+import { getProducts } from "@/api/products";
 import {
   Table,
   TableBody,
@@ -16,25 +16,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronRight, CircleAlert, CirclePlus, CloudCog, Pencil, Trash } from "lucide-react";
+import { ChevronRight, CircleAlert, CirclePlus, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EditProductView } from "./EditProduct";
 import { NewProductView } from "./NewProductView";
 import { ProductsRequest } from "./ProductsRequest";
+import { Product } from "@/types/products";
 
 // Formateador de guaraníes
 const formatGs = (value: number) => {
   return `₲ ${value.toLocaleString("es-PY")}`;
 };
 
-// Tipo de producto
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-};
+
 
 export function ProductsView() {
   const navigate = useNavigate();
@@ -46,7 +40,7 @@ export function ProductsView() {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const goBack = () => navigate(-1);
+  const goBack = () => navigate('/home');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -74,22 +68,11 @@ export function ProductsView() {
       prev.map((p) => (p.id === updated.id ? updated : p))
     );
   };
+  const handleDeleteProduct = (id: string) => {
+    setPerfumes((prev) => prev.filter((p) => p.id !== id))
+  }
+  
 
-  const handleDeleteClick = async (product: Product) => {
-    const confirmDelete = window.confirm(
-      `¿Estás seguro de que querés eliminar el producto "${product.name}"?`
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      await deleteProduct(product.id);
-      setPerfumes((prev) => prev.filter((p) => p.id !== product.id));
-    } catch (error) {
-      console.error("Error al eliminar el producto:", error);
-      alert("No se pudo eliminar el producto.");
-    }
-  };
 
   if (loading) return <p>Cargando productos...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -125,9 +108,9 @@ export function ProductsView() {
           <TableRow className="text-secondary font-bold text-base">
             <TableHead>Nombre</TableHead>
             <TableHead>Descripción</TableHead>
-            <TableHead>Precio</TableHead>
-            <TableHead>Stock</TableHead>
-            <TableHead>Acciones</TableHead>
+            <TableHead className="text-center">Precio</TableHead>
+            <TableHead className="text-center">Stock</TableHead>
+            <TableHead className="text-center"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -135,9 +118,9 @@ export function ProductsView() {
             <TableRow key={perfume.id}>
               <TableCell className="font-medium">{perfume.name}</TableCell>
               <TableCell>{perfume.description}</TableCell>
-              <TableCell>{formatGs(perfume.price)}</TableCell>
+              <TableCell className="text-center">{formatGs(perfume.price)}</TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
+                <div className="flex justify-center items-center gap-2">
                   {perfume.stock}
                   {perfume.stock < 10 && (
                     <TooltipProvider>
@@ -158,7 +141,7 @@ export function ProductsView() {
                     </TooltipProvider>)}
                 </div>
               </TableCell>
-              <TableCell className="flex items-center gap-2">
+              <TableCell className="flex justify-center items-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -169,19 +152,6 @@ export function ProductsView() {
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary text-tertiary">
                       <p>Editar</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Trash
-                        className="cursor-pointer"
-                        onClick={() => handleDeleteClick(perfume)}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-secondary text-tertiary">
-                      <p>Borrar</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -200,6 +170,7 @@ export function ProductsView() {
           onOpenChange={setShowEditModal}
           data={selectedProduct}
           onSubmit={handleUpdateProduct}
+          onDelete={handleDeleteProduct}
         />
       )}
       <NewProductView
