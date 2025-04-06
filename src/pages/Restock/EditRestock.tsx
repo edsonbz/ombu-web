@@ -36,7 +36,7 @@ export function EditRestock({
 }: EditRestockViewProps) {
   const [quantity, setQuantity] = useState(data.quantity)
   const [status, setStatus] = useState(data.status)
-
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     setQuantity(data.quantity)
     setStatus(data.status)
@@ -45,10 +45,12 @@ export function EditRestock({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      setLoading(true)
       const updated = await updateRestock(data.id, { ...data, quantity, status })
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error al actualizar solicitud:", error)
     }
   }
@@ -59,7 +61,7 @@ export function EditRestock({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-center">Editar Solicitud</DialogTitle>
-             <Description/>
+            <Description />
           </DialogHeader>
           <div className="grid gap-4 py-4">
             {/* Producto (solo lectura) */}
@@ -92,35 +94,35 @@ export function EditRestock({
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-                {/* Cantidad editable */}
-            <div className="grid grid-cols-1 items-center gap-4">
-              <Label className="text-right">Cantidad</Label>
-              <Input
-                type="number"
-                min={1}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="col-span-3"
-              />
+              {/* Cantidad editable */}
+              <div className="grid grid-cols-1 items-center gap-4">
+                <Label className="text-right">Cantidad</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="col-span-3"
+                />
+              </div>
+              {/* Estado editable */}
+              <div className="grid grid-cols-1 items-center gap-4">
+                <Label className="text-right">Estado</Label>
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pendiente">Pendiente</SelectItem>
+                    <SelectItem value="aprobado">Aprobado</SelectItem>
+                    <SelectItem value="rechazado">Rechazado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-               {/* Estado editable */}
-            <div className="grid grid-cols-1 items-center gap-4">
-              <Label className="text-right">Estado</Label>
-              <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="aprobado">Aprobado</SelectItem>
-                  <SelectItem value="rechazado">Rechazado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            </div>      
           </div>
           <DialogFooter className="flex items-center justify-between">
-            <Button type="submit">CONFIRMAR</Button>
+            <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

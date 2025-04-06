@@ -14,6 +14,7 @@ import { NewSupplierViewProps, Supplier } from "@/types/suppliers"
 
 
 export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<Omit<Supplier, "id">>({
     name: "",
     address: "",
@@ -43,9 +44,11 @@ export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      setLoading(true)
       await addSupplier(formData)
       onOpenChange(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error al agregar proveedor:", error)
     }
   }
@@ -98,7 +101,7 @@ export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">CONFIRMAR</Button>
+          <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -27,7 +27,7 @@ export function EditSupplier({
   onDelete,
 }: EditSupplierProps) {
   const [formData, setFormData] = useState<Supplier>(data)
-
+const [loading, setLoading] = useState(false)
   useEffect(() => {
     setFormData(data)
   }, [data])
@@ -44,10 +44,12 @@ export function EditSupplier({
     e.preventDefault()
 
     try {
+      setLoading(true)
       const updated = await updateSupplier(formData)
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error al actualizar proveedor:", error)
     }
   }
@@ -100,8 +102,8 @@ export function EditSupplier({
             </div>
           </div>
           <DialogFooter className="flex items-center justify-between">
-            <Button type="submit">CONFIRMAR</Button>
-            <TooltipProvider>
+          <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
+          <TooltipProvider>
   <Tooltip>
     <TooltipTrigger asChild>
       <Trash

@@ -28,7 +28,7 @@ export function EditProductView({
   onDelete,
 }: EditProductViewProps) {
   const [formData, setFormData] = useState<Product>(data)
-
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     setFormData(data)
   }, [data])
@@ -45,10 +45,12 @@ export function EditProductView({
     e.preventDefault()
 
     try {
+      setLoading(true)
       const updated = await updateProduct(formData)
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error al actualizar el producto:", error)
     }
   }
@@ -129,21 +131,21 @@ export function EditProductView({
             </div>
           </div>
           <DialogFooter className="flex items-center justify-between">
-      
-            <Button type="submit">CONFIRMAR</Button>
+
+            <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
             <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Trash
-                        className="cursor-pointer"
-                        onClick={handleDeleteClick}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-secondary text-tertiary">
-                      <p>Borrar</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Trash
+                    className="cursor-pointer"
+                    onClick={handleDeleteClick}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary text-tertiary">
+                  <p>Borrar</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -19,6 +19,7 @@ import { deleteRestock, getRestocks } from "@/api/restock"
 import { RestockRequest } from "@/types/restocks"
 import { EditRestock } from "./EditRestock"
 import { useNavigate } from "react-router-dom"
+import { Spinner } from "../Spinner/Spinner"
 
 export function RestockView() {
     const [requests, setRequests] = useState<RestockRequest[]>([])
@@ -66,18 +67,17 @@ export function RestockView() {
     }
     const goBack = () => navigate('/home')
 
-    if (loading) return <p>Cargando solicitudes...</p>
-    if (error) return <p>Error: {error}</p>
-
-    return (
+    return loading ? (
+        <Spinner />
+    ) : (
         <div className="bg-tertiary p-4 rounded-lg">
             <div className="flex items-center text-secondary mb-6">
-                    <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
-                        Solicitudes
-                    </span>
-                    <ChevronRight className="w-6 h-6 mx-2 text-secondary" />
-                    <span className="text-xl">Gestiona tus solicitudes</span>
-                </div>
+                <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
+                    Solicitudes
+                </span>
+                <ChevronRight className="w-6 h-6 mx-2 text-secondary" />
+                <span className="text-xl">Gestiona tus solicitudes</span>
+            </div>
             <Table className="bg-tertiary border border-baseBorder rounded-lg">
                 <TableCaption>Lista de solicitudes de reposición realizadas.</TableCaption>
                 <TableHeader>

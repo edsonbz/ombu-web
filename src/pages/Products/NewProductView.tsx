@@ -18,6 +18,7 @@ export function NewProductView({
   open,
   onOpenChange,
 }: NewProductViewProps) {
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<Omit<Product, "id">>({
     name: "",
     description: "",
@@ -53,9 +54,11 @@ export function NewProductView({
     }
 
     try {
+      setLoading(true)
       await addProduct(newProduct)
       onOpenChange(false)
     } catch (error) {
+      setLoading(false)
       console.error("Error al agregar el producto:", error)
     }
   }
@@ -122,7 +125,7 @@ export function NewProductView({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">CONFIRMAR</Button>
+          <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
