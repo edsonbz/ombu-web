@@ -19,5 +19,10 @@ export default defineConfig({
         secure: false,
       },
     },
-  } : undefined
+  } : undefined,
+  preview: {
+    port: 3000,
+    host: true,
+    allowedHosts: ['ombu-web-production.up.railway.app'],
+  },
 })
