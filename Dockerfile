@@ -2,15 +2,13 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copiamos los archivos necesarios e instalamos dependencias
 COPY package*.json ./
 RUN npm install
 
-# Copiamos el resto del código y construimos la app
 COPY . .
 RUN npm run build
 
-# Etapa 2: Servidor (usando serve)
+# Etapa 2: Producción
 FROM node:20-alpine
 WORKDIR /app
 
