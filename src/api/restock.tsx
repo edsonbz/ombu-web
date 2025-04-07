@@ -45,39 +45,26 @@ export async function deleteRestock(id: string): Promise<void> {
       throw error
     }
   }
-// Editar solicitud de reposición
-export async function updateRestock(id: string, updated: RestockRequest): Promise<RestockRequest> {
-    try {
-      const res = await fetch(`${BASE_URL}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      })
-  
-      if (!res.ok) throw new Error("Error al actualizar la solicitud")
-  
-      return await res.json()
-    } catch (error) {
-      console.error("Error en updateRestock:", error)
-      throw error
-    }
-  }
 
-// Cambiar estado de la solicitud de reposición
-  export async function changeRestockStatus(id: string, status: "pendiente" | "aprobado" | "rechazado") {
-    try {
-      const res = await fetch(`${BASE_URL}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      })
-  
-      if (!res.ok) throw new Error("Error al cambiar el estado")
-  
-      return await res.json()
-    } catch (error) {
-      console.error("Error en changeRestockStatus:", error)
-      throw error
-    }
+// Editar solicitud (solo cantidad y estado)
+export async function updateRestock(
+  id: string,
+  data: { quantity: number; status: string }
+): Promise<RestockRequest> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) throw new Error("Error al actualizar la solicitud");
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error en updateRestock:", error);
+    throw error;
   }
+}
+
     

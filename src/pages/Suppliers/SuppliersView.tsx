@@ -21,12 +21,12 @@ import { EditSupplier } from "./EditSupplier"
 import { NewSupplier } from "./NewSupplier"
 import { Supplier } from "@/types/suppliers"
 import { Spinner } from "../Spinner/Spinner"
+import { toast } from "sonner"
 
 export function SuppliersView() {
     const navigate = useNavigate()
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
     const [showAddModal, setShowAddModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
@@ -46,7 +46,8 @@ export function SuppliersView() {
                 setSuppliers(mappedData)
             } catch (err: any) {
                 console.error("Error al obtener los proveedores:", err)
-                setError(err.message || "Error desconocido")
+                toast.error("Error al obtener los proveedores")
+                navigate("/home")
             } finally {
                 setLoading(false)
             }
@@ -63,7 +64,9 @@ export function SuppliersView() {
             await deleteSupplier(id);
             setSuppliers((prev) => prev.filter((s) => s.id !== id));
             setShowEditModal(false);
+            toast.success("Proveedor eliminado correctamente");
         } catch (err) {
+            toast.error("Error al eliminar proveedor");
             console.error("Error al eliminar proveedor:", err);
         }
     };

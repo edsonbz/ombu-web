@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { addProduct } from "@/api/products"
 import { NewProductViewProps, Product } from "@/types/products"
+import { toast } from "sonner"
 
 
 export function NewProductView({
@@ -57,9 +58,11 @@ export function NewProductView({
       setLoading(true)
       await addProduct(newProduct)
       onOpenChange(false)
+      toast.success("Producto agregado correctamente")
     } catch (error) {
       setLoading(false)
       console.error("Error al agregar el producto:", error)
+      toast.error("Error al agregar el producto")
     }
   }
 

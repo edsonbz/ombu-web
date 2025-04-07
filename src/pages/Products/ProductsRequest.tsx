@@ -14,6 +14,8 @@ import { getSuppliers } from "@/api/suppliers"
 import { addRestock } from "@/api/restock"
 import { ProductsRequestProps } from "@/types/products"
 import { Supplier } from "@/types/suppliers"
+import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -41,13 +43,16 @@ export function ProductsRequest({
       fetchSuppliers()
     }
   }, [open, productId])
-
+  const navigate = useNavigate()
   const fetchSuppliers = async () => {
     try {
       const data = await getSuppliers()
       setSuppliers(data)
+      toast.success("Proveedores cargados correctamente")
     } catch (error) {
       console.error("Error al cargar proveedores", error)
+      toast.error("Error al cargar proveedores")
+      navigate("/home")
     }
   }
 
@@ -64,8 +69,10 @@ export function ProductsRequest({
     try {
       await addRestock(formData)
       onOpenChange(false)
+      toast.success("Solicitud de reposición enviada correctamente")
     } catch (error) {
       console.error("Error al solicitar reposición:", error)
+      toast.error("Error al solicitar reposición")
     }
   }
 

@@ -14,33 +14,41 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ChevronRight, Pencil } from "lucide-react"
+import { ChevronRight, FilePlus, Pencil } from "lucide-react"
 import { deleteRestock, getRestocks } from "@/api/restock"
 import { RestockRequest } from "@/types/restocks"
 import { EditRestock } from "./EditRestock"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "../Spinner/Spinner"
+import { toast } from "sonner"
+import { PurchaseInvoicePreView } from "../PurchaseInvoice/PurchaseInvoicePreView"
 
 export function RestockView() {
     const [requests, setRequests] = useState<RestockRequest[]>([])
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedRequest, setSelectedRequest] = useState<RestockRequest | null>(null)
-    const navigate = useNavigate()
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const data = await getRestocks()
-                setRequests(data)
-            } catch (err: any) {
-                console.error("Error al obtener solicitudes:", err)
-                setError(err.message || "Error desconocido")
-            } finally {
-                setLoading(false)
-            }
-        }
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false)
+    const [selectedForInvoice, setSelectedForInvoice] = useState<RestockRequest | null>(null)
 
+    const navigate = useNavigate()
+
+    // 🔄 Función reutilizable para cargar las solicitudes
+    const fetchRequests = async () => {
+        setLoading(true)
+        try {
+            const data = await getRestocks()
+            setRequests(data)
+        } catch (err: any) {
+            console.error("Error al obtener solicitudes:", err)
+            toast.error("Error al obtener solicitudes")
+            navigate("/home")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
         fetchRequests()
     }, [])
 
@@ -49,9 +57,11 @@ export function RestockView() {
         if (!confirmed) return
         try {
             await deleteRestock(id)
-            setRequests((prev) => prev.filter((r) => r.id !== id))
+            await fetchRequests()
+            toast.success("Solicitud eliminada correctamente")
         } catch (err) {
             console.error("Error al eliminar solicitud:", err)
+            toast.error("Error al eliminar solicitud")
         }
     }
 
@@ -60,16 +70,14 @@ export function RestockView() {
         setShowEditModal(true)
     }
 
-    const handleUpdate = (updated: RestockRequest) => {
-        setRequests((prev) =>
-            prev.map((r) => (r.id === updated.id ? updated : r))
-        )
+    const handleUpdate = async () => {
+        await fetchRequests()
+        setShowEditModal(false)
     }
-    const goBack = () => navigate('/home')
 
-    return loading ? (
-        <Spinner />
-    ) : (
+    const goBack = () => navigate("/home")
+
+    return loading ? (<Spinner />) : (
         <div className="bg-tertiary p-4 rounded-lg">
             <div className="flex items-center text-secondary mb-6">
                 <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
@@ -78,9 +86,10 @@ export function RestockView() {
                 <ChevronRight className="w-6 h-6 mx-2 text-secondary" />
                 <span className="text-xl">Gestiona tus solicitudes</span>
             </div>
+
             <Table className="bg-tertiary border border-baseBorder rounded-lg">
-                <TableCaption>Lista de solicitudes de reposición realizadas.</TableCaption>
-                <TableHeader>
+            <TableCaption>Lista de solicitudes, las ya facturadas puedes ver con más detalles en <Link className="text-secondary font-bold" to={'/purchaseInvoice'}>Facturas</Link></TableCaption>
+            <TableHeader>
                     <TableRow className="text-secondary font-bold text-base">
                         <TableHead>Producto</TableHead>
                         <TableHead>Proveedor</TableHead>
@@ -97,12 +106,37 @@ export function RestockView() {
                             <TableCell>{req.provider.name}</TableCell>
                             <TableCell className="text-center">{req.quantity}</TableCell>
                             <TableCell>{new Date(req.restockDate).toLocaleDateString("es-PY")}</TableCell>
-                            <TableCell>{req.status}</TableCell>
+                            <TableCell>
+                                <div className="flex items-center gap-1">
+                                    {req.status}
+                                    {req.status === "aprobado" && (
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <FilePlus
+                                                        className="cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedForInvoice(req)
+                                                            setShowInvoiceModal(true)
+                                                        }}
+                                                    />
+                                                </TooltipTrigger>
+                                                <TooltipContent className="bg-secondary text-tertiary">
+                                                    <p>Facturar</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    )}
+                                </div>
+                            </TableCell>
                             <TableCell className="flex items-center">
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Pencil className="cursor-pointer" onClick={() => handleEditClick(req)} />
+                                            <Pencil
+                                                className="cursor-pointer"
+                                                onClick={() => handleEditClick(req)}
+                                            />
                                         </TooltipTrigger>
                                         <TooltipContent className="bg-secondary text-tertiary">
                                             <p>Editar</p>
@@ -124,6 +158,12 @@ export function RestockView() {
                     onDelete={handleDelete}
                 />
             )}
+
+            <PurchaseInvoicePreView
+                open={showInvoiceModal}
+                onOpenChange={setShowInvoiceModal}
+                restock={selectedForInvoice}
+            />
         </div>
     )
 }

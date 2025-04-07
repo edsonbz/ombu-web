@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { addSupplier } from "@/api/suppliers"
 import { NewSupplierViewProps, Supplier } from "@/types/suppliers"
+import { toast } from "sonner"
 
 
 export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
@@ -47,8 +48,10 @@ export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
       setLoading(true)
       await addSupplier(formData)
       onOpenChange(false)
+      toast.success("Proveedor agregado correctamente")
     } catch (error) {
       setLoading(false)
+      toast.error("Error al agregar proveedor")
       console.error("Error al agregar proveedor:", error)
     }
   }

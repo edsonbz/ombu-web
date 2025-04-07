@@ -3,8 +3,15 @@ export type RestockRequest = {
   quantity: number
   restockDate: string
   status: string
-  provider: { name: string }
-  product: { name: string }
+  provider: {
+    id: string
+    name: string
+  }
+  product: {
+    name: string
+    id: string
+    price: number
+  }
 }
 
 export type CreateRestockRequest = {

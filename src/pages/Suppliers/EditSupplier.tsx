@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Trash } from "lucide-react"
+import { toast } from "sonner"
 
 export function EditSupplier({
   open,
@@ -48,8 +49,10 @@ const [loading, setLoading] = useState(false)
       const updated = await updateSupplier(formData)
       onSubmit(updated)
       onOpenChange(false)
+      toast.success("Proveedor actualizado correctamente")
     } catch (error) {
       setLoading(false)
+      toast.error("Error al actualizar proveedor")
       console.error("Error al actualizar proveedor:", error)
     }
   }

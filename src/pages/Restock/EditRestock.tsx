@@ -46,7 +46,7 @@ export function EditRestock({
     e.preventDefault()
     try {
       setLoading(true)
-      const updated = await updateRestock(data.id, { ...data, quantity, status })
+      const updated = await updateRestock(data.id, { quantity, status })
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
@@ -106,7 +106,7 @@ export function EditRestock({
                 />
               </div>
               {/* Estado editable */}
-              <div className="grid grid-cols-1 items-center gap-4">
+              <div className="grid grid-cols-2 items-center gap-4">
                 <Label className="text-right">Estado</Label>
                 <Select value={status} onValueChange={setStatus}>
                   <SelectTrigger className="w-full">

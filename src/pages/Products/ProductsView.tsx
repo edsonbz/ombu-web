@@ -23,6 +23,7 @@ import { NewProductView } from "./NewProductView";
 import { ProductsRequest } from "./ProductsRequest";
 import { Product } from "@/types/products";
 import { Spinner } from "../Spinner/Spinner";
+import { toast } from "sonner";
 
 // Formateador de guaraníes
 const formatGs = (value: number) => {
@@ -50,6 +51,7 @@ export function ProductsView() {
       } catch (err: any) {
         navigate("/home");
         setLoading(false);
+        toast.error("Error al obtener los productos");
         console.error("Error al obtener los productos:", err);
         setError(err.message || "Error desconocido");
       } finally {

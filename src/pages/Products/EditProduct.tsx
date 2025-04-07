@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Trash } from "lucide-react"
 import { deleteProduct } from "@/api/products"
+import { toast } from "sonner"
 export function EditProductView({
   open,
   onOpenChange,
@@ -49,9 +50,11 @@ export function EditProductView({
       const updated = await updateProduct(formData)
       onSubmit(updated)
       onOpenChange(false)
+      toast.success("Producto actualizado correctamente")
     } catch (error) {
       setLoading(false)
       console.error("Error al actualizar el producto:", error)
+      toast.error("Error al actualizar el producto")
     }
   }
   const handleDeleteClick = async () => {
@@ -64,9 +67,11 @@ export function EditProductView({
       await deleteProduct(data.id)
       onDelete(data.id)
       onOpenChange(false)
+      toast.success("Producto eliminado correctamente")
     } catch (error) {
       console.error("Error al eliminar el producto:", error)
       alert("No se pudo eliminar el producto.")
+      toast.error("Error al eliminar el producto")
     }
   }
   return (
