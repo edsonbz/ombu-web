@@ -11,13 +11,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
+  server: process.env.NODE_ENV === "development" ? {
     proxy: {
-      '/api': {                             // Ruta base de tu API
-        target: 'http://localhost:3000',    // URL del backend
-        changeOrigin: true,                 // Cambia el origen para evitar problemas con CORS
-        secure: false,                      // Desactiva SSL si usas HTTP local
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        secure: false,
       },
     },
-  },
+  } : undefined
 })
