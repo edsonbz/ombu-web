@@ -1,8 +1,8 @@
 import '@/pages/Spinner/Spinner.css';
 
-export const Spinner = () => {
+export const Spinner = ({ inline = false }: { inline?: boolean }) => {
   return (
-    <div className="spinner-overlay">
+    <div className={inline ? '' : 'spinner-overlay'}>
       <div className="intersecting-circles-spinner">
         <div className="spinnerBlock">
           <span className="circle"></span>

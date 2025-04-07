@@ -52,7 +52,7 @@ export default function LoginView() {
         [signIn]
     );
 
-    return loading ? (<Spinner />) : (
+    return (
         <div className="min-h-screen flex items-center justify-center px-4 relative">
             {/* luces animadas */}
             <div className="light x1" />
@@ -116,9 +116,14 @@ export default function LoginView() {
                                         {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
                                     </div>
 
-                                    <Button type="submit" className="w-full bg-secondary hover:bg-tertiary" disabled={loading}>
-                                        Iniciar sesión
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-secondary hover:bg-tertiary flex items-center justify-center"
+                                        disabled={loading}
+                                    >
+                                        {loading ? <Spinner inline /> : "Iniciar sesión"}
                                     </Button>
+
                                 </div>
                             </div>
                         </form>
