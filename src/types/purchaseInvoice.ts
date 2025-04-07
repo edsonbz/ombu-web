@@ -18,3 +18,8 @@ export type PurchaseInvoice = {
     }
   }
   
+  export type PurchaseInvoiceProps = {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    invoice: PurchaseInvoice | null
+  }

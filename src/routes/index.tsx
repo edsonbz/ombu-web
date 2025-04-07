@@ -24,7 +24,7 @@ export function Routing() {
                     <Route path="/products" element={<ProductsView/>} />
                     <Route path="/suppliers" element={<SuppliersView/>} />
                     <Route path="/restocks" element={<RestockView/>} />
-                    <Route path="/purchaseInvoice" element={<PurchaseInvoiceView/>} />
+                    <Route path="/purchases-invoice" element={<PurchaseInvoiceView/>} />
                 </Route>
             </Routes>
         </BrowserRouter>

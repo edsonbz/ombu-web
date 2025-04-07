@@ -88,7 +88,7 @@ export function RestockView() {
             </div>
 
             <Table className="bg-tertiary border border-baseBorder rounded-lg">
-            <TableCaption>Lista de solicitudes, las ya facturadas puedes ver con más detalles en <Link className="text-secondary font-bold" to={'/purchaseInvoice'}>Facturas</Link></TableCaption>
+            <TableCaption>Lista de solicitudes, las ya facturadas puedes ver con más detalles en <Link className="text-secondary font-bold" to={'/purchases-invoice'}>Facturas</Link></TableCaption>
             <TableHeader>
                     <TableRow className="text-secondary font-bold text-base">
                         <TableHead>Producto</TableHead>
