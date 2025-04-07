@@ -10,18 +10,19 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Etapa 2: Servidor (para servir la app con Vite preview)
+# Etapa 2: Servidor (usando serve)
 FROM node:20-alpine
 WORKDIR /app
 
-# Copiamos el resultado del build
-COPY --from=builder /app /app
+# Instalamos 'serve' globalmente
+RUN npm install -g serve
 
-# Instalamos vite globalmente para el preview
-RUN npm install -g vite
+# Copiamos solo los archivos generados por el build
+COPY --from=builder /app/dist /app
 
-# Railway expone por defecto el puerto 3000
+# Railway usa el puerto 3000 por defecto
+ENV PORT=3000
 EXPOSE 3000
 
-# Usamos la variable de entorno $PORT que Railway define
-CMD ["sh", "-c", "vite preview --host --port $PORT"]
+# Ejecutamos el servidor
+CMD ["serve", "-s", ".", "-l", "3000"]
