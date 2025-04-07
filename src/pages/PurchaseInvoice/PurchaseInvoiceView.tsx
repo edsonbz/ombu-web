@@ -9,7 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ChevronRight, Eye, Printer } from "lucide-react"
-import { getPurchaseInvoices } from "@/api/purchaseInvoice"
+import { getPurchaseInvoices } from "@/api/purchases-invoice"
 import {
     Tooltip,
     TooltipContent,

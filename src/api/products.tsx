@@ -1,8 +1,6 @@
 import { Product } from "@/types/products"
 
-const BASE_URL = "http://localhost:3000/api/products"
-
-
+const BASE_URL = import.meta.env.VITE_API_URL + "/products"
 
 // Obtener todos los productos
 export async function getProducts(): Promise<Product[]> {

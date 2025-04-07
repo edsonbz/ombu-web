@@ -1,6 +1,6 @@
 import { CreateRestockRequest, RestockRequest } from "@/types/restocks"
 
-const BASE_URL = "http://localhost:3000/api/restock"
+const BASE_URL = import.meta.env.VITE_API_URL + "/restock"
 
 // Crear solicitud de reposición
 export async function addRestock(restock: CreateRestockRequest): Promise<RestockRequest> {

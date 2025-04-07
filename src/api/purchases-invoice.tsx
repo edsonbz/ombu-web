@@ -1,6 +1,6 @@
 import { PurchaseInvoice } from "@/types/purchaseInvoice"
-
-const BASE_URL = "http://localhost:3000/api/purchase-invoices"
+// purchaseInvoice.ts o cualquier archivo de API
+const BASE_URL = import.meta.env.VITE_API_URL + "/purchase-invoices"
  
 //Funcion para crear una factura de compra
 export async function createPurchaseInvoice(

@@ -1,6 +1,6 @@
 import { Supplier } from "@/types/suppliers"
 
-const BASE_URL = "http://localhost:3000/api/providers"
+const BASE_URL = import.meta.env.VITE_API_URL + "/providers"
 
 // Obtener todos los proveedores
 export async function getSuppliers(): Promise<Supplier[]> {

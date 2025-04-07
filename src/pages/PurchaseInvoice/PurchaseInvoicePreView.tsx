@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { RestockRequest } from "@/types/restocks"
-import { createPurchaseInvoice } from "@/api/purchaseInvoice"
+import { createPurchaseInvoice } from "@/api/purchases-invoice"
 import { toast } from "sonner"
 
 type Props = {
