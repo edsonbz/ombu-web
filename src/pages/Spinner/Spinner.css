@@ -83,3 +83,17 @@
     z-index: 9999;
   }
   
+  /* Ajustes cuando el spinner está dentro de un botón */
+button .intersecting-circles-spinner {
+  width: 8px;
+  height: 8px;
+}
+
+button .intersecting-circles-spinner .spinnerBlock {
+  width: 8px;
+  height: 8px;
+}
+
+button .intersecting-circles-spinner .circle {
+  border-width: 1.5px;
+}
