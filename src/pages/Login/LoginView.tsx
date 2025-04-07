@@ -5,6 +5,8 @@ import { Label } from "@radix-ui/react-label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { useAuth } from "../../context/auth";
+import { toast } from "sonner";
+import { Spinner } from "../Spinner/Spinner";
 
 export default function LoginView() {
     const formData = useRef({ email: '', password: '' });
@@ -30,6 +32,7 @@ export default function LoginView() {
     const onSubmit = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
+            setLoading(true);
             if (!validate()) return;
 
             setLoading(true);
@@ -37,17 +40,19 @@ export default function LoginView() {
             const result = await signIn(email.trim(), password.trim());
 
             if (!result) {
+                toast.error('Error al iniciar sesión. Verifica tus credenciales.');
                 console.log('Error al iniciar sesión:', result);
                 setLoading(false);
             } else {
                 console.log('Inicio de sesión exitoso:', result);
                 navigate('/home');
+                setLoading(false);
             }
         },
         [signIn]
     );
 
-    return (
+    return loading ? (<Spinner />) : (
         <div className="min-h-screen flex items-center justify-center px-4 relative">
             {/* luces animadas */}
             <div className="light x1" />
@@ -112,7 +117,7 @@ export default function LoginView() {
                                     </div>
 
                                     <Button type="submit" className="w-full bg-secondary hover:bg-tertiary" disabled={loading}>
-                                        {loading ? "Iniciando..." : "Iniciar sesión"}
+                                        Iniciar sesión
                                     </Button>
                                 </div>
                             </div>
