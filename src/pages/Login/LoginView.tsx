@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '@/pages/login/LoginView.css';
 import { Button } from "../../components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
