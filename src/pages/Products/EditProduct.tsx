@@ -10,33 +10,29 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { addProduct } from "@/api/products"
-import { NewProductViewProps, Product } from "@/types/products"
+import { updateProduct } from "@/api/products"
+import { EditProductViewProps, Product } from "@/types/products"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Trash } from "lucide-react"
+import { deleteProduct } from "@/api/products"
 import { toast } from "sonner"
-
-
-export function NewProductView({
+export function EditProductView({
   open,
   onOpenChange,
-}: NewProductViewProps) {
+  data,
+  onSubmit,
+  onDelete,
+}: EditProductViewProps) {
+  const [formData, setFormData] = useState<Product>(data)
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<Omit<Product, "id">>({
-    name: "",
-    description: "",
-    price: 0,
-    stock: 0,
-  })
-
   useEffect(() => {
-    if (open) {
-      setFormData({
-        name: "",
-        description: "",
-        price: 0,
-        stock: 0,
-      })
-    }
-  }, [open])
+    setFormData(data)
+  }, [data])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -49,29 +45,41 @@ export function NewProductView({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const newProduct: Product = {
-      ...formData,
-      id: "",
-    }
-
     try {
       setLoading(true)
-      await addProduct(newProduct)
+      const updated = await updateProduct(formData)
+      onSubmit(updated)
       onOpenChange(false)
-      toast.success("Producto agregado correctamente")
+      toast.success("Producto actualizado correctamente")
     } catch (error) {
       setLoading(false)
-      console.error("Error al agregar el producto:", error)
-      toast.error("Error al agregar el producto")
+      console.error("Error al actualizar el producto:", error)
+      toast.error("Error al actualizar el producto")
     }
   }
+  const handleDeleteClick = async () => {
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que querés eliminar el producto "${data.name}"?`
+    )
+    if (!confirmDelete) return
 
+    try {
+      await deleteProduct(data.id)
+      onDelete(data.id)
+      onOpenChange(false)
+      toast.success("Producto eliminado correctamente")
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error)
+      alert("No se pudo eliminar el producto.")
+      toast.error("Error al eliminar el producto")
+    }
+  }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
-          <DialogHeader >
-            <DialogTitle className="text-center">Agregar Producto</DialogTitle>
+          <DialogHeader>
+            <DialogTitle className="text-center">Editar Producto</DialogTitle>
             <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -127,8 +135,22 @@ export function NewProductView({
               />
             </div>
           </div>
-          <DialogFooter>
-          <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
+          <DialogFooter className="flex items-center justify-between">
+
+            <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Trash
+                    className="cursor-pointer"
+                    onClick={handleDeleteClick}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary text-tertiary">
+                  <p>Borrar</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </DialogFooter>
         </form>
       </DialogContent>

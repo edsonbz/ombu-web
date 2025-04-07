@@ -76,7 +76,6 @@ export default function LoginView() {
                         </CardTitle>
                         <CardDescription>Inicia sesión</CardDescription>
                     </CardHeader>
-
                     <CardContent>
                         <form onSubmit={onSubmit}>
                             <div className="grid gap-6">

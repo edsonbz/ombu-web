@@ -3,37 +3,33 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { addProduct } from "@/api/products"
-import { NewProductViewProps, Product } from "@/types/products"
+import { addSupplier } from "@/api/suppliers"
+import { NewSupplierViewProps, Supplier } from "@/types/suppliers"
 import { toast } from "sonner"
 
 
-export function NewProductView({
-  open,
-  onOpenChange,
-}: NewProductViewProps) {
+export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<Omit<Product, "id">>({
+  const [formData, setFormData] = useState<Omit<Supplier, "id">>({
     name: "",
-    description: "",
-    price: 0,
-    stock: 0,
+    address: "",
+    phone: "",
+    email: "",
   })
 
   useEffect(() => {
     if (open) {
       setFormData({
         name: "",
-        description: "",
-        price: 0,
-        stock: 0,
+        address: "",
+        phone: "",
+        email: "",
       })
     }
   }, [open])
@@ -42,27 +38,21 @@ export function NewProductView({
     const { id, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [id]: id === "price" || id === "stock" ? Number(value) : value,
+      [id]: value,
     }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    const newProduct: Product = {
-      ...formData,
-      id: "",
-    }
-
     try {
       setLoading(true)
-      await addProduct(newProduct)
+      await addSupplier(formData)
       onOpenChange(false)
-      toast.success("Producto agregado correctamente")
+      toast.success("Proveedor agregado correctamente")
     } catch (error) {
       setLoading(false)
-      console.error("Error al agregar el producto:", error)
-      toast.error("Error al agregar el producto")
+      toast.error("Error al agregar proveedor")
+      console.error("Error al agregar proveedor:", error)
     }
   }
 
@@ -70,15 +60,12 @@ export function NewProductView({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
-          <DialogHeader >
-            <DialogTitle className="text-center">Agregar Producto</DialogTitle>
-            <DialogDescription />
+          <DialogHeader>
+            <DialogTitle className="text-center">Agregar Proveedor</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Nombre
-              </Label>
+              <Label htmlFor="name" className="text-right">Nombre</Label>
               <Input
                 id="name"
                 value={formData.name}
@@ -88,42 +75,31 @@ export function NewProductView({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Descripción
-              </Label>
+              <Label htmlFor="address" className="text-right">Dirección</Label>
               <Input
-                id="description"
-                value={formData.description}
+                id="address"
+                value={formData.address}
                 onChange={handleChange}
                 className="col-span-3"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">
-                Precio Unitario
-              </Label>
+              <Label htmlFor="phone" className="text-right">Teléfono</Label>
               <Input
-                id="price"
-                type="number"
-                value={formData.price}
+                id="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 className="col-span-3"
-                required
-                min={0}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="stock" className="text-right">
-                Stock disponible
-              </Label>
+              <Label htmlFor="email" className="text-right">Email</Label>
               <Input
-                id="stock"
-                type="number"
-                value={formData.stock}
+                id="email"
+                type="email"
+                value={formData.email}
                 onChange={handleChange}
                 className="col-span-3"
-                required
-                min={0}
               />
             </div>
           </div>
