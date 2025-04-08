@@ -28,6 +28,7 @@ import { Trash } from "lucide-react"
 import { Description } from "@radix-ui/react-dialog"
 import { useAuth } from "@/context/auth"
 import { toast } from "sonner"
+import { set } from "zod"
 
 export function EditRestock({
   open,
@@ -56,9 +57,8 @@ export function EditRestock({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!token) return
-
+    setLoading(true)
     try {
-      setLoading(true)
       let updated
 
       if (status === "aprobado") {
@@ -68,7 +68,7 @@ export function EditRestock({
       } else {
         updated = await updateRestock(data.id, { quantity, status })
       }
-
+      setLoading(false)
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
@@ -76,6 +76,7 @@ export function EditRestock({
       setQuantity(originalQuantity)
       setStatus(originalStatus)
       console.error("Error al actualizar solicitud:", error)
+      setLoading(false)
     } finally {
       setLoading(false)
     }

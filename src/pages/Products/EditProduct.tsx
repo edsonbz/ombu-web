@@ -44,12 +44,12 @@ export function EditProductView({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    setLoading(true)
     try {
-      setLoading(true)
       const updated = await updateProduct(formData)
       onSubmit(updated)
       onOpenChange(false)
+      setLoading(false)
       toast.success("Producto actualizado correctamente")
     } catch (error) {
       setLoading(false)
@@ -58,10 +58,6 @@ export function EditProductView({
     }
   }
   const handleDeleteClick = async () => {
-    const confirmDelete = window.confirm(
-      `¿Estás seguro de que querés eliminar el producto "${data.name}"?`
-    )
-    if (!confirmDelete) return
 
     try {
       await deleteProduct(data.id)

@@ -47,6 +47,7 @@ export function NewProductView({
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true)
     e.preventDefault()
 
     const newProduct: Product = {
@@ -58,6 +59,7 @@ export function NewProductView({
       setLoading(true)
       await addProduct(newProduct)
       onOpenChange(false)
+      setLoading(false)
       toast.success("Producto agregado correctamente")
     } catch (error) {
       setLoading(false)

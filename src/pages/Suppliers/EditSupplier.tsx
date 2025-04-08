@@ -43,12 +43,13 @@ const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
 
     try {
-      setLoading(true)
       const updated = await updateSupplier(formData)
       onSubmit(updated)
       onOpenChange(false)
+      setLoading(false)
       toast.success("Proveedor actualizado correctamente")
     } catch (error) {
       setLoading(false)

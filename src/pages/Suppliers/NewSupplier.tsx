@@ -43,11 +43,13 @@ export function NewSupplier({ open, onOpenChange }: NewSupplierViewProps) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true)
     e.preventDefault()
     try {
       setLoading(true)
       await addSupplier(formData)
       onOpenChange(false)
+      setLoading(false)
       toast.success("Proveedor agregado correctamente")
     } catch (error) {
       setLoading(false)
