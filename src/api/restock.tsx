@@ -9,16 +9,24 @@ export async function addRestock(restock: CreateRestockRequest): Promise<Restock
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(restock),
-    })
+    });
 
-    if (!res.ok) throw new Error("Error al crear solicitud de reposición")
+    const data = await res.json();
 
-    return await res.json()
+    if (!res.ok) {
+      const error = new Error(data.error || "Error al crear solicitud de reposición");
+      // @ts-ignore
+      error.response = { status: res.status, data };
+      throw error;
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error en addRestock:", error)
-    throw error
+    console.error("Error en addRestock:", error);
+    throw error;
   }
 }
+
 
 //Traer solicitudes de reposición
 export async function getRestocks(): Promise<RestockRequest[]> {

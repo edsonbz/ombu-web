@@ -28,3 +28,8 @@ export type EditRestockViewProps = {
   onDelete?: (id: string) => void
 }
 
+export type AddRestockViewProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmit: (newRestock: RestockRequest) => void
+}

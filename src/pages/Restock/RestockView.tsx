@@ -21,29 +21,42 @@ import {
     Info,
     Pencil,
     Trash,
+    CirclePlus
 } from "lucide-react"
 import { deleteRestock, getRestocks } from "@/api/restock"
+import { getProducts } from "@/api/products"
 import { RestockRequest } from "@/types/restocks"
 import { EditRestock } from "./EditRestock"
 import { Link, useNavigate } from "react-router-dom"
 import { Spinner } from "../Spinner/Spinner"
 import { toast } from "sonner"
+import { getSuppliers } from "@/api/suppliers"
+import { NewRestock } from "./NewRestock"
 
 export function RestockView() {
     const [requests, setRequests] = useState<RestockRequest[]>([])
+    const [products, setProducts] = useState<{ id: string; name: string; price: number }[]>([])
+    const [providers, setProviders] = useState<{ id: string; name: string }[]>([])
     const [loading, setLoading] = useState(true)
     const [showEditModal, setShowEditModal] = useState(false)
+    const [showAddModal, setShowAddModal] = useState(false)
     const [selectedRequest, setSelectedRequest] = useState<RestockRequest | null>(null)
 
     const navigate = useNavigate()
 
-    const fetchRequests = async () => {
-        setLoading(true)
+    const fetchData = async () => {
         try {
-            const data = await getRestocks()
-            setRequests(data)
+            setLoading(true)
+            const [res, prods, provs] = await Promise.all([
+                getRestocks(),
+                getProducts(),
+                getSuppliers()
+            ])
+            setRequests(res)
+            setProducts(prods.map(({ id, name, price }) => ({ id, name, price })))
+            setProviders(provs.map(({ id, name }) => ({ id, name })))
         } catch (err: any) {
-            console.error("Error al obtener solicitudes:", err)
+            console.error("Error al cargar solicitudes:", err)
             toast.error("Error al obtener solicitudes")
             navigate("/home")
         } finally {
@@ -52,7 +65,7 @@ export function RestockView() {
     }
 
     useEffect(() => {
-        fetchRequests()
+        fetchData()
     }, [])
 
     const handleDelete = async (id: string) => {
@@ -60,7 +73,7 @@ export function RestockView() {
         if (!confirmed) return
         try {
             await deleteRestock(id)
-            await fetchRequests()
+            await fetchData()
             toast.success("Solicitud eliminada correctamente")
         } catch (err) {
             console.error("Error al eliminar solicitud:", err)
@@ -74,25 +87,47 @@ export function RestockView() {
     }
 
     const handleUpdate = async () => {
-        await fetchRequests()
+        await fetchData()
         setShowEditModal(false)
+    }
+
+    const handleAdd = (created: RestockRequest) => {
+        setRequests((prev) => [...prev, created])
+        setShowAddModal(false)
     }
 
     const goBack = () => navigate("/home")
 
-    return loading ? (<Spinner />) : (
+    return loading ? (
+        <Spinner />
+    ) : (
         <div className="bg-tertiary p-4 rounded-lg">
-            <div className="flex items-center text-secondary mb-6">
-                <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
-                    Solicitudes
-                </span>
-                <ChevronRight className="w-6 h-6 mx-2 text-secondary" />
-                <span className="text-xl">Gestiona tus solicitudes</span>
+            <div className="flex justify-between items-center text-secondary mb-6">
+                <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
+                        Solicitudes
+                    </span>
+                    <ChevronRight className="w-6 h-6 text-secondary" />
+                    <span className="text-xl">Gestiona tus solicitudes</span>
+                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <CirclePlus className="cursor-pointer" onClick={() => setShowAddModal(true)} />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-secondary text-tertiary">
+                            <p>Agregar</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
 
             <Table className="bg-tertiary border border-baseBorder rounded-lg">
                 <TableCaption>
-                    Lista de solicitudes, las ya facturadas puedes ver con más detalles en <Link className="text-secondary font-bold" to={'/purchases-invoice'}>Facturas</Link>
+                    Lista de solicitudes. Las ya facturadas puedes ver con más detalles en{" "}
+                    <Link className="text-secondary font-bold" to={"/purchases-invoice"}>
+                        Facturas
+                    </Link>
                 </TableCaption>
                 <TableHeader>
                     <TableRow className="text-secondary font-bold text-base">
@@ -110,7 +145,9 @@ export function RestockView() {
                             <TableCell>{req.product.name}</TableCell>
                             <TableCell>{req.provider.name}</TableCell>
                             <TableCell className="text-center">{req.quantity}</TableCell>
-                            <TableCell>{new Date(req.restockDate).toLocaleDateString("es-PY")}</TableCell>
+                            <TableCell>
+                                {new Date(req.restockDate).toLocaleDateString("es-PY")}
+                            </TableCell>
                             <TableCell>
                                 <div className="flex text-center items-center gap-1">
                                     {req.status === "pendiente" && (
@@ -201,6 +238,14 @@ export function RestockView() {
                     onDelete={handleDelete}
                 />
             )}
+
+            <NewRestock
+                open={showAddModal}
+                onOpenChange={setShowAddModal}
+                products={products}
+                providers={providers}
+                onSubmit={handleAdd}
+            />
         </div>
     )
 }
