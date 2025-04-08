@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { updateRestock } from "@/api/restock"
+import { updateRestock, approveRestock, rejectRestock } from "@/api/restock"
 import { EditRestockViewProps } from "@/types/restocks"
 import {
   Select,
@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 import { Trash } from "lucide-react"
 import { Description } from "@radix-ui/react-dialog"
+import { useAuth } from "@/context/auth"
+import { toast } from "sonner"
 
 export function EditRestock({
   open,
@@ -36,27 +38,59 @@ export function EditRestock({
 }: EditRestockViewProps) {
   const [quantity, setQuantity] = useState(data.quantity)
   const [status, setStatus] = useState(data.status)
+  const [originalQuantity, setOriginalQuantity] = useState(data.quantity)
+  const [originalStatus, setOriginalStatus] = useState(data.status)
   const [loading, setLoading] = useState(false)
+  const { token } = useAuth()
+
+  const isEditable = data.status === "pendiente"
+  const canDelete = data.status === "rechazado"
+
   useEffect(() => {
     setQuantity(data.quantity)
     setStatus(data.status)
+    setOriginalQuantity(data.quantity)
+    setOriginalStatus(data.status)
   }, [data])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!token) return
+
     try {
       setLoading(true)
-      const updated = await updateRestock(data.id, { quantity, status })
+      let updated
+
+      if (status === "aprobado") {
+        updated = await approveRestock(data.id, token)
+      } else if (status === "rechazado") {
+        updated = await rejectRestock(data.id, token)
+      } else {
+        updated = await updateRestock(data.id, { quantity, status })
+      }
+
       onSubmit(updated)
       onOpenChange(false)
     } catch (error) {
-      setLoading(false)
+      toast.error("Ocurrió un error. Se restauraron los valores")
+      setQuantity(originalQuantity)
+      setStatus(originalStatus)
       console.error("Error al actualizar solicitud:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
+  const handleDialogChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setQuantity(originalQuantity)
+      setStatus(originalStatus)
+    }
+    onOpenChange(isOpen)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -93,49 +127,57 @@ export function EditRestock({
                 className="col-span-3 bg-muted text-muted-foreground"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {/* Cantidad editable */}
-              <div className="grid grid-cols-1 items-center gap-4">
-                <Label className="text-right">Cantidad</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="col-span-3"
-                />
-              </div>
-              {/* Estado editable */}
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label className="text-right">Estado</Label>
-                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pendiente">Pendiente</SelectItem>
-                    <SelectItem value="aprobado">Aprobado</SelectItem>
-                    <SelectItem value="rechazado">Rechazado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
+            {/* Cantidad (editable solo si pendiente) */}
+            <div className="grid grid-cols-4 gap-4">
+              <Label className="text-right">Cantidad</Label>
+              <Input
+                type="number"
+                min={1}
+                value={quantity}
+                disabled={!isEditable}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="col-span-1"
+              />
+            </div>
+
+            {/* Estado (editable solo si pendiente) */}
+            <div className="grid grid-cols-4 gap-4">
+              <Label className="text-right">Estado</Label>
+              <Select value={status} onValueChange={setStatus} disabled={!isEditable}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pendiente">Pendiente</SelectItem>
+                  <SelectItem value="aprobado">Aprobado</SelectItem>
+                  <SelectItem value="rechazado">Rechazado</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
           <DialogFooter className="flex items-center justify-between">
-            <Button type="submit" disabled={loading}>{loading ? "EN PROCESO..." : "CONFIRMAR"}</Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Trash
-                    className="cursor-pointer"
-                    onClick={() => onDelete?.(data.id)}
-                  />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary text-tertiary">
-                  <p>Borrar</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {isEditable && (
+              <Button type="submit" disabled={loading}>
+                {loading ? "EN PROCESO..." : "CONFIRMAR"}
+              </Button>
+            )}
+            {canDelete && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Trash
+                      className="cursor-pointer"
+                      onClick={() => onDelete?.(data.id)}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary text-tertiary">
+                    <p>Borrar</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

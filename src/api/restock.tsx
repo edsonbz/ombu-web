@@ -67,4 +67,48 @@ export async function updateRestock(
   }
 }
 
-    
+// Aprobar solicitud de reposición
+export async function approveRestock(id: string, token: string): Promise<RestockRequest> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/aprobar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const body = await res.json();
+      throw new Error(body.error || "Error al aprobar la solicitud");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error en approveRestock:", error);
+    throw error;
+  }
+}
+
+// Rechazar solicitud de reposición
+export async function rejectRestock(id: string, token: string): Promise<RestockRequest> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/rechazar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const body = await res.json();
+      throw new Error(body.error || "Error al rechazar la solicitud");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error en rejectRestock:", error);
+    throw error;
+  }
+}    

@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChevronRight, CircleAlert, CirclePlus, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { EditProductView } from "./EditProduct";
 import { NewProductView } from "./NewProductView";
 import { ProductsRequest } from "./ProductsRequest";
@@ -102,7 +102,11 @@ export function ProductsView() {
       </div>
 
       <Table className="bg-tertiary border border-baseBorder rounded-lg">
-        <TableCaption>Lista de perfumes disponibles.</TableCaption>
+      <TableCaption>
+  Inventario actual de perfumes disponibles. Para ver más detalles click en <Link className="text-secondary font-bold" to={'/restocks'}>
+    Solicitudes
+  </Link>.
+</TableCaption>
         <TableHeader>
           <TableRow className="text-secondary font-bold text-base">
             <TableHead>Nombre</TableHead>
@@ -126,7 +130,7 @@ export function ProductsView() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <CircleAlert
-                            className="cursor-pointer"
+                            className="cursor-pointer text-red-600"
                             onClick={() => {
                               setSelectedProduct(perfume);
                               setShowRequestModal(true);

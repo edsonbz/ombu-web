@@ -12,8 +12,10 @@ export async function login(email: string, password: string) {
         });
 
         if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
+            const errorBody = await response.json();
+            throw new Error(errorBody.error || 'Error desconocido');
+          }
+          
 
         const data = await response.json();
         console.log(data);  // El token si es un login exitoso

@@ -9,6 +9,7 @@ export type PurchaseInvoice = {
       email: string
     }
     restock: {
+      unitPrice: any
       quantity: number
       restockDate: string
       product: {

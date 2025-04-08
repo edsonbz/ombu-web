@@ -48,7 +48,6 @@ export function ProductsRequest({
     try {
       const data = await getSuppliers()
       setSuppliers(data)
-      toast.success("Proveedores cargados correctamente")
     } catch (error) {
       console.error("Error al cargar proveedores", error)
       toast.error("Error al cargar proveedores")

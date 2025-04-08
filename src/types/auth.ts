@@ -1,13 +1,14 @@
-export interface User {
+export type AuthUser = {
 	id: string;
 	name: string;
 	email: string;
-	password: string;
-}
-
-export interface AuthContextType {
-	user?: User;
-	loading: boolean;
-	signIn: (email: string, password: string) => Promise<{ token: string, user: User } | null>;
+  };
+  
+  export type AuthContextType = {
+	user?: AuthUser;
+	token?: string;
+	signIn: (email: string, password: string) => Promise<any>;
 	signOut: () => void;
-}
+	loading: boolean;
+  };
+  

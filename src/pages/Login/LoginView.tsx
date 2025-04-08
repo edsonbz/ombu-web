@@ -37,17 +37,20 @@ export default function LoginView() {
 
             setLoading(true);
             const { email, password } = formData.current;
-            const result = await signIn(email.trim(), password.trim());
+            try {
+                const result = await signIn(email.trim(), password.trim());
 
-            if (!result) {
-                toast.error('Error al iniciar sesión. Verifica tus credenciales.');
-                console.log('Error al iniciar sesión:', result);
-                setLoading(false);
-            } else {
-                console.log('Inicio de sesión exitoso:', result);
-                navigate('/home');
+                if (!result) {
+                    toast.error("Error inesperado. Intenta de nuevo.");
+                    setLoading(false);
+                    return;
+                }
+                navigate("/home");
+            } catch (error: any) {
+                toast.error(error.message || "Error al iniciar sesión.");
                 setLoading(false);
             }
+            setLoading(false);
         },
         [signIn]
     );

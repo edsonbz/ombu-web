@@ -10,8 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { RestockRequest } from "@/types/restocks"
-import { createPurchaseInvoice } from "@/api/purchases-invoice"
-import { toast } from "sonner"
 
 type Props = {
   open: boolean
@@ -28,21 +26,6 @@ export function PurchaseInvoicePreView({ open, onOpenChange, restock }: Props) {
       setTotal(calculated)
     }
   }, [restock])
-
-  const handleConfirmInvoice = async () => {
-    if (!restock) return
-
-    try {
-        await createPurchaseInvoice(restock.id, restock.provider.id, total)
-
-      toast.success("Factura generada correctamente")
-      onOpenChange(false)
-    } catch (error) {
-      console.error("Error al crear factura:", error)
-        toast.error("Error al generar factura")
-      alert("No se pudo generar la factura.")
-    }
-  }
 
   if (!restock) return null
 
@@ -73,7 +56,7 @@ export function PurchaseInvoicePreView({ open, onOpenChange, restock }: Props) {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleConfirmInvoice}>CONFIRMAR</Button>
+          <Button>CONFIRMAR</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
