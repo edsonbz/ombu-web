@@ -65,7 +65,6 @@ export function ClientsView() {
   }
 
   const handleAddClient = (created: Client) => {
-    console.log("Cliente creado (desde ClientNew):", created)
     if (!created.id) {
       toast.error("El cliente creado no tiene ID. No se agregará a la tabla.")
       return
@@ -107,6 +106,7 @@ export function ClientsView() {
           <TableRow className="text-secondary font-bold text-base">
             <TableHead>Nombre</TableHead>
             <TableHead>Dirección</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Teléfono</TableHead>
             <TableHead>RUC</TableHead>
             <TableHead className="text-center"></TableHead>
@@ -117,6 +117,7 @@ export function ClientsView() {
             <TableRow key={client.id}>
               <TableCell>{client.name}</TableCell>
               <TableCell>{client.address}</TableCell>
+              <TableCell>{client.email}</TableCell>
               <TableCell>{client.phone}</TableCell>
               <TableCell>{client.ruc}</TableCell>
               <TableCell className="flex justify-center items-center">

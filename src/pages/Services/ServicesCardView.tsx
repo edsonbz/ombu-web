@@ -44,7 +44,13 @@ export function ServicesCardView() {
       title: "Facturas de Clientes",
       description: "Gestiona tus facturas de clientes",
       icon: FileUser,
-      url: "/ordenes-venta",
+      url: "/purchases-invoice-clients",
+    },
+    {
+      title: "Ventas",
+      description: "Gestiona tus ventas",
+      icon: FileUser,
+      url: "/sales",
     }
   ];
 

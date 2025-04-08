@@ -20,13 +20,14 @@ export function ClientNew({ open, onOpenChange, onSubmit
   const [formData, setFormData] = useState<Omit<Client, "id" | "createdAt">>({
     name: "",
     address: "",
+    email: "",
     phone: "",
     ruc: "",
   })
 
   useEffect(() => {
     if (open) {
-      setFormData({ name: "", address: "", phone: "", ruc: "" })
+      setFormData({ name: "", address: "",email:"", phone: "", ruc: "" })
     }
   }, [open])
 
@@ -40,7 +41,6 @@ export function ClientNew({ open, onOpenChange, onSubmit
     setLoading(true)
     try {
       const created = await addClient(formData)
-      console.log("Cliente creado desde API:", created)
       onSubmit(created)
       onOpenChange(false)
       toast.success("Cliente agregado correctamente")
