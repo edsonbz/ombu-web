@@ -14,7 +14,8 @@ import { addClient } from "@/api/clients"
 import { NewClientViewProps, Client } from "@/types/clients"
 import { toast } from "sonner"
 
-export function ClientNew({ open, onOpenChange }: NewClientViewProps) {
+export function ClientNew({ open, onOpenChange, onSubmit
+}: NewClientViewProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<Omit<Client, "id" | "createdAt">>({
     name: "",
@@ -38,7 +39,9 @@ export function ClientNew({ open, onOpenChange }: NewClientViewProps) {
     e.preventDefault()
     setLoading(true)
     try {
-      await addClient(formData)
+      const created = await addClient(formData)
+      console.log("Cliente creado desde API:", created)
+      onSubmit(created)
       onOpenChange(false)
       toast.success("Cliente agregado correctamente")
     } catch (error) {
@@ -47,6 +50,7 @@ export function ClientNew({ open, onOpenChange }: NewClientViewProps) {
       setLoading(false)
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

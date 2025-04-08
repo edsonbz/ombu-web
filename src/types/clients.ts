@@ -18,5 +18,5 @@ export interface Client {
   export interface NewClientViewProps {
     open: boolean
     onOpenChange: (open: boolean) => void
+    onSubmit: (created: Client) => void 
   }
-  

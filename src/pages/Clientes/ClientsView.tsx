@@ -64,6 +64,15 @@ export function ClientsView() {
     setClients((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
   }
 
+  const handleAddClient = (created: Client) => {
+    console.log("Cliente creado (desde ClientNew):", created)
+    if (!created.id) {
+      toast.error("El cliente creado no tiene ID. No se agregará a la tabla.")
+      return
+    }
+    setClients((prev) => [...prev, created])
+  }
+
   const handleDeleteClient = (id: string) => {
     setClients((prev) => prev.filter((c) => c.id !== id))
   }
@@ -148,7 +157,8 @@ export function ClientsView() {
         />
       )}
 
-      <ClientNew open={showAddModal} onOpenChange={setShowAddModal} />
+      <ClientNew open={showAddModal} onOpenChange={setShowAddModal} onSubmit={handleAddClient}
+      />
     </div>
   )
 }
