@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FileClock, Scroll, ShoppingBasket, ShoppingCart, Users } from "lucide-react";
+import { FileClock, FileUser, Scroll, ShoppingBasket, ShoppingCart, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function ServicesCardView() {
@@ -17,10 +17,10 @@ export function ServicesCardView() {
       url: "/products",
     },
     {
-      title: "Proveedores",
-      description: "Gestiona tus proveedores",
-      icon: ShoppingCart,
-      url: "/suppliers",
+      title: "Órdenes de Reposición",
+      description: "Gestiona tus órdenes de reposición",
+      icon: FileClock,
+      url: "/restocks",
     },
     {
       title: "Clientes",
@@ -29,21 +29,21 @@ export function ServicesCardView() {
       url: "/clients",
     },
     {
-      title: "Órdenes de Reposición",
-      description: "Gestiona tus órdenes de reposición",
-      icon: FileClock,
-      url: "/restocks",
+      title: "Proveedores",
+      description: "Gestiona tus proveedores",
+      icon: ShoppingCart,
+      url: "/suppliers",
     },
     {
-      title: "Facturas",
-      description: "Gestiona tus facturas",
+      title: "Facturas de Reposiciones",
+      description: "Gestiona tus facturas de reposiciones",
       icon: Scroll,
       url: "/purchases-invoice",
     },
     {
-      title: "Órdenes de venta",
-      description: "Gestiona tus órdenes de venta",
-      icon: ShoppingCart,
+      title: "Facturas de Clientes",
+      description: "Gestiona tus facturas de clientes",
+      icon: FileUser,
       url: "/ordenes-venta",
     }
   ];
