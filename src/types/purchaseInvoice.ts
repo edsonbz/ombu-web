@@ -1,4 +1,5 @@
 export type PurchaseInvoice = {
+    createdByEmail: string
     id: string
     date: string
     total: number

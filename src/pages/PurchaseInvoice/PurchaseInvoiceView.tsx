@@ -94,7 +94,14 @@ export function PurchaseInvoiceView() {
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <Printer className="cursor-pointer"
-                                                    onClick={() => generateInvoicePDF(inv)}
+                                                   onClick={async () => {
+                                                    try {
+                                                      await generateInvoicePDF(inv)
+                                                    } catch (error) {
+                                                      toast.error("No se pudo generar el PDF")
+                                                      console.error(error)
+                                                    }
+                                                  }}
                                                 />
                                             </TooltipTrigger>
                                             <TooltipContent className="bg-secondary text-tertiary">
