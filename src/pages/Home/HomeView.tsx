@@ -14,7 +14,7 @@ export default function HomeView() {
             <div className="flex flex-col gap-4 p-3">
                 <ServicesCardView/>
                 <br />
-                <StatisticsView />
+                {/* <StatisticsView /> */}
                 {/* <DataTableView /> */}
             </div>
         </>
