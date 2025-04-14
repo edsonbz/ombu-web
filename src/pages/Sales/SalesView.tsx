@@ -105,27 +105,14 @@ export function SalesView() {
                                         </TooltipProvider>
                                     )}
 
-                                    {sale.invoice?.paymentStatus === "aprobado" && (
+                                    {sale.invoice?.paymentStatus === "pagado" && (
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <CircleCheck className="text-green-600" />
                                                 </TooltipTrigger>
                                                 <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Aprobado</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
-
-                                    {sale.invoice?.paymentStatus === "rechazado" && (
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <CircleX className="text-red-600" />
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Rechazado</p>
+                                                    <p>Pagado</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
@@ -152,39 +139,44 @@ export function SalesView() {
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <a
-                                                        href={`/api/invoices/${sale.id}/view`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <FileText className="cursor-pointer" />
-                                                    </a>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Ver PDF</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                        {sale.invoice?.paymentStatus === "pagado" && (
 
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <a
-                                                        href={`/api/invoices/${sale.id}/download`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <Printer className="cursor-pointer" />
-                                                    </a>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Descargar PDF</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <a
+                                                            href={`/api/invoices/${sale.id}/view`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <FileText className="cursor-pointer" />
+                                                        </a>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-secondary text-tertiary">
+                                                        <p>Ver PDF</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        )}
+                                        {sale.invoice?.paymentStatus === "pagado" && (
+
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <a
+                                                            href={`/api/invoices/${sale.id}/download`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Printer className="cursor-pointer" />
+                                                        </a>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-secondary text-tertiary">
+                                                        <p>Descargar PDF</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        )}
                                     </>
                                 )}
                             </TableCell>

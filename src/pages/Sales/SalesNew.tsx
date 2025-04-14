@@ -170,7 +170,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
             <div className="flex gap-2 mb-2 mt-2">
               <Label className="">Método de Pago</Label>
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger className="w-[60%]">
+                <SelectTrigger className="w-[49%]">
                   <SelectValue placeholder="Seleccionar método" />
                 </SelectTrigger>
                 <SelectContent>
