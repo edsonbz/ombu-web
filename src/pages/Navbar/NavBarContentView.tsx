@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/auth";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBarContentView() {
@@ -22,7 +22,6 @@ export default function NavBarContentView() {
         <span className="text-secondary font-bold">Bienvenido a OMBU</span>
       </div>
       <div className="flex gap-4 items-center">
-        <Settings className="w-6 h-6 text-secondary cursor-pointer" onClick={() => navigate("#")} />
         <LogOut className="w-6 h-6 text-secondary cursor-pointer" onClick={handleLogout} />
       </div>
     </header>

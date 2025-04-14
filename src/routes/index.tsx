@@ -8,6 +8,7 @@ import { RestockView } from "@/pages/Restock/RestockView";
 import { PurchaseInvoiceView } from "@/pages/PurchaseInvoice/PurchaseInvoiceView";
 import { Layout } from "@/components/ui/Layout";
 import { ClientsView } from "@/pages/Clientes/ClientsView";
+import { SalesView } from "@/pages/Sales/SalesView";
 
 
 export function Routing() {
@@ -23,6 +24,7 @@ export function Routing() {
           <Route path="/restocks" element={<RestockView />} />
           <Route path="/purchases-invoice" element={<PurchaseInvoiceView />} />
           <Route path="/clients" element={<ClientsView />} />
+          <Route path="/sales" element={<SalesView />} />
         </Route>
       </Routes>
     </BrowserRouter>
