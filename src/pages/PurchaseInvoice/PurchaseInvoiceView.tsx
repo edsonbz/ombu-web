@@ -20,7 +20,7 @@ import { Spinner } from "../Spinner/Spinner"
 import { toast } from "sonner"
 import { PurchaseInvoice } from "@/types/purchaseInvoice"
 import { PurchaseInvoiceDetailsModal } from "./PurchaseInvoiceDetails";
-import { generateInvoicePDF } from "@/util/pdfGenerator";
+// import { PdfGenerator } from "@/util/pdfGenerator";
 import { useNavigate } from "react-router-dom";
 
 export function PurchaseInvoiceView() {
@@ -94,14 +94,14 @@ export function PurchaseInvoiceView() {
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <Printer className="cursor-pointer"
-                                                   onClick={async () => {
-                                                    try {
-                                                      await generateInvoicePDF(inv)
-                                                    } catch (error) {
-                                                      toast.error("No se pudo generar el PDF")
-                                                      console.error(error)
-                                                    }
-                                                  }}
+                                                //    onClick={async () => {
+                                                //     try {
+                                                //       await PdfGenerator(inv, "view")
+                                                //     } catch (error) {
+                                                //       toast.error("No se pudo generar el PDF")
+                                                //       console.error(error)
+                                                //     }
+                                                //   }}
                                                 />
                                             </TooltipTrigger>
                                             <TooltipContent className="bg-secondary text-tertiary">

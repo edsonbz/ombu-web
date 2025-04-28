@@ -21,6 +21,14 @@ import {
 import { Trash } from "lucide-react"
 import { toast } from "sonner"
 
+const fieldLabels: Record<keyof Omit<Client, "id" | "createdAt">, string> = {
+  name: "Nombre",
+  address: "Dirección",
+  email: "Correo electrónico",
+  phone: "Teléfono",
+  ruc: "RUC",
+}
+
 export function ClientEdit({
   open,
   onOpenChange,
@@ -75,13 +83,14 @@ export function ClientEdit({
             <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {["name", "address", "phone", "ruc"].map((field) => (
+            {Object.entries(fieldLabels).map(([field, label]) => (
               <div key={field} className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor={field} className="text-right capitalize">
-                  {field}
+                <Label htmlFor={field} className="text-right">
+                  {label}
                 </Label>
                 <Input
                   id={field}
+                  type={field === "email" ? "email" : "text"}
                   value={formData[field as keyof Client]}
                   onChange={handleChange}
                   className="col-span-3"

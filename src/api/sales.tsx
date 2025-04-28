@@ -36,3 +36,54 @@ export async function createSale(sale: SaleRequest): Promise<SaleWithDetails> {
     throw error
   }
 }
+
+// Confirmar pago de venta
+export async function confirmSalePayment(id: string): Promise<void> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/pagar`, {
+      method: "PATCH",
+    })
+
+    if (!res.ok) {
+      const body = await res.json()
+      throw new Error(body.error || "Error al confirmar pago")
+    }
+  } catch (error) {
+    console.error("Error en confirmSalePayment:", error)
+    throw error
+  }
+}
+
+// Rechazar venta (antes de pagar)
+export async function rejectSale(id: string): Promise<void> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/rechazar`, {
+      method: "PATCH",
+    })
+
+    if (!res.ok) {
+      const body = await res.json()
+      throw new Error(body.error || "Error al rechazar venta")
+    }
+  } catch (error) {
+    console.error("Error en rejectSale:", error)
+    throw error
+  }
+}
+
+// Devolver venta (después de pagar)
+export async function returnSale(id: string): Promise<void> {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/devolver`, {
+      method: "PATCH",
+    })
+
+    if (!res.ok) {
+      const body = await res.json()
+      throw new Error(body.error || "Error al devolver venta")
+    }
+  } catch (error) {
+    console.error("Error en returnSale:", error)
+    throw error
+  }
+}

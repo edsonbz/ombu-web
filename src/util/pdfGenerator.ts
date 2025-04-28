@@ -1,71 +1,45 @@
-import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
-import { PurchaseInvoice } from "@/types/purchaseInvoice"
-// import num2words from "num2words" // opcional si querés agregar el total en letras de nuevo
+import { SaleWithDetails } from "@/types/sales";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-// Función para formatear números con puntos como separadores de miles
-function formatGuarani(value: number): string {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-}
-
-export async function generateInvoicePDF(invoice: PurchaseInvoice) {
-  const doc = new jsPDF()
-
-  // Cargar imagen del logo
-  const logo = new Image()
-  logo.src = "/bug.png"
-  await new Promise<void>((resolve) => (logo.onload = () => resolve()))
-  doc.addImage(logo, "PNG", 15, 10, 12, 10)
+export async function PdfGenerator(sale: SaleWithDetails, mode: "view" | "download" = "view") {
+  const doc = new jsPDF();
 
   // Encabezado
-  doc.setFont("helvetica", "bold")
-  doc.setFontSize(18)
-  doc.text("OMBU", 45, 20)
-  doc.setFontSize(14)
-  doc.setFont("helvetica", "normal")
-  doc.text("Factura de Compra", 45, 28)
+  doc.setFontSize(18);
+  doc.text("Factura de Venta", 70, 20);
 
-  // Caja con datos del proveedor
-  doc.setDrawColor(180)
-  doc.setLineWidth(0.3)
-  doc.rect(15, 40, 180, 32)
-  doc.setFontSize(12)
-  doc.text(`Proveedor: ${invoice.provider.name}`, 20, 48)
-  doc.text(`RUC: ${invoice.provider.email}`, 20, 54) // RUC asumido como email
-  doc.text(`Fecha: ${new Date(invoice.date).toLocaleDateString("es-PY")}`, 20, 60)
-  doc.text(`Emitido por: ${invoice.createdByEmail || "-"}`, 20, 66)
+  doc.setFontSize(12);
+  doc.text(`Cliente: ${sale.client.name}`, 15, 35);
+  doc.text(`Fecha: ${new Date(sale.date).toLocaleDateString("es-PY")}`, 15, 42);
 
-  // Tabla con los datos de la reposición
+  const tableData = sale.products.map((item) => [
+    item.product?.name || "Producto desconocido",
+    item.quantity,
+    `Gs. ${item.product?.price.toLocaleString() || "0"}`,
+    `Gs. ${(item.product?.price * item.quantity).toLocaleString()}`,
+  ]);
+
   autoTable(doc, {
-    startY: 80,
-    head: [["Cantidad", "Descripción", "Precio Unitario", "Total"]],
-    body: [
-      [
-        invoice.restock.quantity.toString(),
-        invoice.restock.product.name,
-        `Gs. ${formatGuarani(Math.floor(invoice.total / invoice.restock.quantity))}`,
-        `Gs. ${formatGuarani(invoice.total)}`,
-      ],
-    ],
-    styles: { halign: "center", valign: "middle", font: "helvetica", fontSize: 11 },
-    headStyles: {
-      fillColor: [0, 0, 0],
-      textColor: [255, 255, 255],
-      fontStyle: "bold",
-    },
-    tableLineColor: [0, 0, 0],
-    tableLineWidth: 0.3,
-  })
+    startY: 55,
+    head: [["Producto", "Cantidad", "Precio Unitario", "Subtotal"]],
+    body: tableData,
+  });
 
-  // Total (cuadro a la derecha)
-  const finalY = (doc as any).lastAutoTable.finalY || 100
-  doc.setFont("helvetica", "bold")
-  doc.setFontSize(12)
-  doc.setDrawColor(0)
-  doc.rect(130, finalY + 5, 60, 10)
-  doc.text(`Total: Gs. ${formatGuarani(invoice.total)}`, 135, finalY + 12)
+  const finalY = (doc as any).lastAutoTable.finalY || 100;
 
-  // Guardar PDF
-  const fileName = `factura_${invoice.provider.name.replace(/\s+/g, "_")}_${invoice.id}.pdf`
-  doc.save(fileName)
+  const total = sale.invoice?.total ?? sale.products.reduce(
+    (acc, item) => acc + (item.product.price * item.quantity), 0
+  );
+  const taxes = sale.invoice?.taxes ?? (total * 0.1);
+
+  doc.text(`Total: Gs. ${total.toLocaleString()}`, 140, finalY + 10);
+  doc.text(`IVA (10%): Gs. ${taxes.toLocaleString()}`, 140, finalY + 18);
+
+  if (mode === "view") {
+    window.open(doc.output("bloburl"), "_blank");
+  } else if (mode === "download") {
+    const filename = `factura_${sale.client.name.replace(/\s+/g, "_")}_${sale.id}.pdf`;
+    doc.save(filename);
+  }
 }

@@ -10,6 +10,8 @@ export type SaleRequest = {
   export type SaleWithDetails = {
     id: string
     client: {
+      email: string
+      correo: string
       id: string
       name: string
     }

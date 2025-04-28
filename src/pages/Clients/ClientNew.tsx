@@ -14,8 +14,15 @@ import { addClient } from "@/api/clients"
 import { NewClientViewProps, Client } from "@/types/clients"
 import { toast } from "sonner"
 
-export function ClientNew({ open, onOpenChange, onSubmit
-}: NewClientViewProps) {
+const fieldLabels: Record<keyof Omit<Client, "id" | "createdAt">, string> = {
+  name: "Nombre",
+  address: "Dirección",
+  email: "Correo electrónico",
+  phone: "Teléfono",
+  ruc: "RUC",
+}
+
+export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<Omit<Client, "id" | "createdAt">>({
     name: "",
@@ -27,7 +34,7 @@ export function ClientNew({ open, onOpenChange, onSubmit
 
   useEffect(() => {
     if (open) {
-      setFormData({ name: "", address: "",email:"", phone: "", ruc: "" })
+      setFormData({ name: "", address: "", email: "", phone: "", ruc: "" })
     }
   }, [open])
 
@@ -51,7 +58,6 @@ export function ClientNew({ open, onOpenChange, onSubmit
     }
   }
 
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -61,13 +67,14 @@ export function ClientNew({ open, onOpenChange, onSubmit
             <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {["name", "address", "phone", "ruc"].map((field) => (
+            {Object.entries(fieldLabels).map(([field, label]) => (
               <div key={field} className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor={field} className="text-right capitalize">
-                  {field}
+                <Label htmlFor={field} className="text-right">
+                  {label}
                 </Label>
                 <Input
                   id={field}
+                  type={field === "email" ? "email" : "text"}
                   value={formData[field as keyof typeof formData]}
                   onChange={handleChange}
                   className="col-span-3"

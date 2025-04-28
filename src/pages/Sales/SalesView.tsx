@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Spinner } from "../Spinner/Spinner";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { FilePlus, FileText, Eye, Printer, Info, CircleCheck, CircleX } from "lucide-react";
+import { FilePlus, FileText, Eye, Printer, Info, CircleCheck, CircleX, ChevronRight, CircleArrowLeft } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/tooltip";
 import { SalesNew } from "./SalesNew";
 import { getSales } from "@/api/sales";
-import { Sale, SaleWithDetails } from "@/types/sales";
+import { SaleWithDetails } from "@/types/sales";
 import { SalesDetails } from "./SalesDetails";
+import { PdfGenerator } from "@/util/pdfGenerator";
 
 export function SalesView() {
     const [sales, setSales] = useState<SaleWithDetails[]>([]);
@@ -48,19 +49,28 @@ export function SalesView() {
 
     useEffect(() => {
         fetchSales();
+        console.log("Sales data fetched:", sales);
     }, []);
 
     const handleNewSale = () => {
         fetchSales();
         setShowAddModal(false);
     };
-
+    const goBack = () => {
+        navigate("/home");
+    }
     return loading ? (
         <Spinner />
     ) : (
         <div className="bg-tertiary p-4 rounded-lg">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-secondary">Ventas Registradas</h2>
+                <div className="flex items-center ">
+                    <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
+                        Ventas
+                    </span>
+                    <ChevronRight className="w-6 h-6 text-secondary" />
+                    <span className="text-xl">Gestiona tus ventas</span>
+                </div>
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -89,10 +99,70 @@ export function SalesView() {
                         <TableRow key={sale.id}>
                             <TableCell>{sale.client.name}</TableCell>
                             <TableCell>{new Date(sale.date).toLocaleDateString("es-PY")}</TableCell>
-                            <TableCell>Gs. {sale.invoice?.total.toLocaleString()}</TableCell>
+
+                            {/* TOTAL */}
+                            <TableCell>
+                                {sale.invoice
+                                    ? `Gs. ${sale.invoice.total.toLocaleString()}`
+                                    : `Gs. ${sale.products.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toLocaleString()}`}
+                            </TableCell>
+
+                            {/* ESTADO */}
                             <TableCell>
                                 <div className="flex text-center items-center gap-1">
-                                    {sale.invoice?.paymentStatus === "pendiente" && (
+                                    {sale.invoice ? (
+                                        <>
+                                            {sale.invoice.paymentStatus === "pendiente" && (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Info className="text-yellow-500" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-secondary text-tertiary">
+                                                            <p>Pendiente</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                            {sale.invoice.paymentStatus === "pagado" && (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <CircleCheck className="text-green-600" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-secondary text-tertiary">
+                                                            <p>Pagado</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                            {sale.invoice.paymentStatus === "rechazado" && (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <CircleX className="text-red-600" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-secondary text-tertiary">
+                                                            <p>Rechazado</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                            {sale.invoice.paymentStatus === "devuelto" && (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <CircleArrowLeft className="text-blue-600" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-secondary text-tertiary">
+                                                            <p>Devuelto</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                        </>
+                                    ) : (
+                                        // No hay invoice todavía → Estado "pendiente"
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
@@ -104,79 +174,59 @@ export function SalesView() {
                                             </Tooltip>
                                         </TooltipProvider>
                                     )}
-
-                                    {sale.invoice?.paymentStatus === "pagado" && (
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <CircleCheck className="text-green-600" />
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Pagado</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
                                 </div>
                             </TableCell>
-                            <TableCell className="text-center flex justify-center gap-4">
-                                {sale.invoice && (
-                                    <>
 
+                            {/* ACCIONES */}
+                            <TableCell className="text-center flex justify-center gap-4">
+                                {/* Botón de Ver Detalles siempre visible */}
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Eye
+                                                className="cursor-pointer"
+                                                onClick={() => {
+                                                    setSelectedSale(sale)
+                                                    setShowDetailsModal(true)
+                                                }}
+                                            />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-secondary text-tertiary">
+                                            <p>Ver detalles</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+
+                                {/* Solo mostrar Ver/Descargar PDF si está pagado */}
+                                {sale.invoice?.paymentStatus === "pagado" && (
+                                    <>
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Eye
+                                                    <FileText
                                                         className="cursor-pointer"
-                                                        onClick={() => {
-                                                            setSelectedSale(sale)
-                                                            setShowDetailsModal(true)
-                                                        }}
+                                                        onClick={() => PdfGenerator(sale, "view")}
                                                     />
                                                 </TooltipTrigger>
                                                 <TooltipContent className="bg-secondary text-tertiary">
-                                                    <p>Ver detalles</p>
+                                                    <p>Ver PDF</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
-                                        {sale.invoice?.paymentStatus === "pagado" && (
 
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <a
-                                                            href={`/api/invoices/${sale.id}/view`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            <FileText className="cursor-pointer" />
-                                                        </a>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className="bg-secondary text-tertiary">
-                                                        <p>Ver PDF</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        )}
-                                        {sale.invoice?.paymentStatus === "pagado" && (
-
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <a
-                                                            href={`/api/invoices/${sale.id}/download`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            <Printer className="cursor-pointer" />
-                                                        </a>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className="bg-secondary text-tertiary">
-                                                        <p>Descargar PDF</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        )}
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Printer
+                                                        className="cursor-pointer"
+                                                        onClick={() => PdfGenerator(sale, "download")}
+                                                    />
+                                                </TooltipTrigger>
+                                                <TooltipContent className="bg-secondary text-tertiary">
+                                                    <p>Descargar PDF</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     </>
                                 )}
                             </TableCell>
@@ -184,6 +234,7 @@ export function SalesView() {
                         </TableRow>
                     ))}
                 </TableBody>
+
             </Table>
 
             <SalesNew open={showAddModal} onOpenChange={setShowAddModal} onSubmit={handleNewSale} />
@@ -191,7 +242,9 @@ export function SalesView() {
                 open={showDetailsModal}
                 onOpenChange={setShowDetailsModal}
                 data={selectedSale}
+                onActionDone={fetchSales}
             />
+
 
         </div>
     );

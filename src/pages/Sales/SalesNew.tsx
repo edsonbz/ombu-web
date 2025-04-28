@@ -22,7 +22,7 @@ import { Client } from "@/types/clients"
 import { Product } from "@/types/products"
 import { toast } from "sonner"
 import { createSale } from "@/api/sales"
-import { Trash2 } from "lucide-react"
+import { CloudCog, Trash2 } from "lucide-react"
 
 
 
@@ -53,6 +53,9 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
       const [cl, pr] = await Promise.all([getClients(), getProducts()])
       setClients(cl)
       setProducts(pr)
+      console.log("Clientes y productos cargados")
+      console.log(cl)
+      console.log(pr)
     } catch {
       toast.error("Error al cargar clientes o productos")
     }
@@ -95,30 +98,43 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
+
+    // 🔐 Validación extra: cliente y productos seleccionados
+    if (!selectedClient) {
+      toast.error("Selecciona un cliente válido.")
+      setLoading(false)
+      return
+    }
+
+    if (items.some(i => i.productId === "")) {
+      toast.error("Selecciona todos los productos antes de continuar.")
+      setLoading(false)
+      return
+    }
 
     // 🔁 Validar productos duplicados
-    const ids = items.map(i => i.productId);
-    const hasDuplicates = new Set(ids).size !== ids.length;
+    const ids = items.map(i => i.productId)
+    const hasDuplicates = new Set(ids).size !== ids.length
     if (hasDuplicates) {
-      toast.error("Hay productos repetidos en la lista.");
-      setLoading(false);
-      return;
+      toast.error("Hay productos repetidos en la lista.")
+      setLoading(false)
+      return
     }
 
     // ✅ Validar stock disponible
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId);
+      const product = products.find(p => p.id === item.productId)
       if (!product) {
-        toast.error("Producto inválido seleccionado.");
-        setLoading(false);
-        return;
+        toast.error("Producto inválido seleccionado.")
+        setLoading(false)
+        return
       }
       if (item.quantity > product.stock) {
-        toast.error(`Stock insuficiente para ${product.name} (disponibles: ${product.stock})`);
-        setLoading(false);
-        return;
+        toast.error(`Stock insuficiente para ${product.name} (disponibles: ${product.stock})`)
+        setLoading(false)
+        return
       }
     }
 
@@ -130,33 +146,32 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
           id: item.productId,
           quantity: item.quantity,
         })),
-      });
+      })
 
-      toast.success("Venta registrada y facturada correctamente");
-      onSubmit();
-      onOpenChange(false);
+      toast.success("Venta registrada y facturada correctamente")
+      onSubmit()
+      onOpenChange(false)
     } catch (error) {
-      console.error("Error al registrar venta:", error);
-      toast.error("Error al registrar la venta");
+      console.error("Error al registrar venta:", error)
+      toast.error("Error al registrar la venta")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[550px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="mb-4">
             <DialogTitle className="text-center">Registrar Venta</DialogTitle>
           </DialogHeader>
           <div className="w-full flex flex-col justify-between">
             {/* Cliente */}
-            <div className="mb-2 mt-2 flex justify-content-center items-center gap-2">
-            <Label>Cliente</Label>
+            <div className="mb-2 mt-2 flex flex-col gap-2">
+              <Label>Cliente</Label>
               <Select value={selectedClient} onValueChange={setSelectedClient}>
-                <SelectTrigger className="w-[60%]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccionar" />
                 </SelectTrigger>
                 <SelectContent>
@@ -167,10 +182,10 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
               </Select>
             </div>
             {/* Método de Pago */}
-            <div className="flex gap-2 mb-2 mt-2">
+            <div className="flex flex-col gap-2 mb-2 mt-2">
               <Label className="">Método de Pago</Label>
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger className="w-[49%]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccionar método" />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,29 +197,38 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
           </div>
           {/* Productos */}
           <div className="space-y-3 max-h-[300px] overflow-auto">
+            <Label>Producto</Label>
             {items.map((item, idx) => (
-              <div key={idx} className="grid grid-cols-8 gap-2 items-center">
-                <Label className="col-span-2">Producto</Label>
-                <Select
-                  value={item.productId}
-                  onValueChange={(value) => handleChangeProduct(idx, value)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Seleccionar producto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={idx} className="flex items-center gap-2">
+                {/* Select de producto más ancho */}
+                <div className="flex-[3]">
+                  <Select
+                    value={item.productId}
+                    onValueChange={(value) => handleChangeProduct(idx, value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar producto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Input de cantidad más angosto */}
                 <Input
                   type="number"
                   min={1}
                   value={item.quantity}
                   onChange={(e) => handleChangeQuantity(idx, Number(e.target.value))}
-                  className="col-span-2"
+                  className="flex-[1]"
                 />
+
+                {/* Botón de borrar */}
                 <Button
                   type="button"
                   size="icon"
@@ -215,15 +239,17 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
+
             ))}
           </div>
 
           <DialogFooter className="mt-6 flex flex-col gap-4 items-center">
-            <Button type="button" variant="outline" onClick={addItem}>
+            <Button type="button" variant="outline" onClick={addItem} disabled={items.length >= 5}
+            >
               + Agregar producto
             </Button>
             <Button type="submit" disabled={loading} className="">
-              {loading ? "Procesando..." : "Registrar y Facturar"}
+              {loading ? "Procesando..." : "Confirmar"}
             </Button>
           </DialogFooter>
         </form>
