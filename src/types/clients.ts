@@ -4,7 +4,8 @@ export interface Client {
     name: string
     address: string
     phone: string
-    ruc: string
+    document: string
+    documentType?: "ci" | "ruc"
     createdAt: string
   }
   

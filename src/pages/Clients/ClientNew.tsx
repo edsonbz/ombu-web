@@ -13,14 +13,20 @@ import { Label } from "@/components/ui/label"
 import { addClient } from "@/api/clients"
 import { NewClientViewProps, Client } from "@/types/clients"
 import { toast } from "sonner"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-const fieldLabels: Record<keyof Omit<Client, "id" | "createdAt">, string> = {
+const baseFieldLabels = {
   name: "Nombre",
   address: "Dirección",
   email: "Correo electrónico",
   phone: "Teléfono",
-  ruc: "RUC",
-}
+} as const
 
 export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) {
   const [loading, setLoading] = useState(false)
@@ -29,14 +35,33 @@ export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) 
     address: "",
     email: "",
     phone: "",
-    ruc: "",
+    document: "",
+    documentType: undefined as unknown as "ci" | "ruc" | undefined,
   })
 
   useEffect(() => {
     if (open) {
-      setFormData({ name: "", address: "", email: "", phone: "", ruc: "" })
+      setFormData({
+        name: "",
+        address: "",
+        email: "",
+        phone: "",
+        document: "",
+        documentType: undefined as unknown as "ci" | "ruc" | undefined,
+      })
     }
   }, [open])
+
+  const validateDocument = (doc?: string, type?: "ci" | "ruc") => {
+    if (!type) return true
+    if (!doc || doc.trim() === "") return false
+    if (type === "ci") {
+      // CI: solo dígitos, 5 a 12 aprox.
+      return /^\d{5,12}$/.test(doc)
+    }
+    // RUC PY frecuente: dígitos + guion + dígito verificador (ej: 80012345-6). Permitimos también sin guion.
+    return /^(\d{6,10}-?\d)$/.test(doc)
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -46,6 +71,11 @@ export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    if (!validateDocument((formData as any).document, (formData as any).documentType as any)) {
+      toast.error("Documento inválido según el tipo seleccionado")
+      setLoading(false)
+      return
+    }
     try {
       const created = await addClient(formData)
       onSubmit(created)
@@ -67,7 +97,8 @@ export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) 
             <DialogDescription />
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {Object.entries(fieldLabels).map(([field, label]) => (
+            {/* Campos base */}
+            {Object.entries(baseFieldLabels).map(([field, label]) => (
               <div key={field} className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor={field} className="text-right">
                   {label}
@@ -75,13 +106,51 @@ export function ClientNew({ open, onOpenChange, onSubmit }: NewClientViewProps) 
                 <Input
                   id={field}
                   type={field === "email" ? "email" : "text"}
-                  value={formData[field as keyof typeof formData]}
+                  value={(formData as any)[field] ?? ""}
                   onChange={handleChange}
                   className="col-span-3"
                   required
                 />
               </div>
             ))}
+
+            {/* Tipo de documento */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="documentType" className="text-right">
+                Tipo de documento
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={(formData as any).documentType ?? ""}
+                  onValueChange={(v) =>
+                    setFormData((prev) => ({ ...(prev as any), documentType: v as "ci" | "ruc" }))
+                  }
+                >
+                  <SelectTrigger id="documentType">
+                    <SelectValue placeholder="Seleccionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ci">CI</SelectItem>
+                    <SelectItem value="ruc">RUC</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Número de documento */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="document" className="text-right">
+                Número de documento
+              </Label>
+              <Input
+                id="document"
+                type="text"
+                value={(formData as any).document ?? ""}
+                onChange={handleChange}
+                className="col-span-3"
+                placeholder={(formData as any).documentType === "ruc" ? "80012345-6" : "1234567"}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={loading}>
