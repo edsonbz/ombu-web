@@ -33,6 +33,7 @@ const baseFieldLabels = {
   address: "Dirección",
   email: "Correo electrónico",
   phone: "Teléfono",
+
 } as const
 
 export function ClientEdit({
@@ -52,12 +53,19 @@ export function ClientEdit({
   const validateDocument = (doc?: string, type?: "ci" | "ruc") => {
     if (!type) return true
     if (!doc || doc.trim() === "") return false
+
     if (type === "ci") {
-      // CI: solo dígitos, 5 a 12 aprox.
+      // CI: solo dígitos, 5 a 12 aprox., sin guion permitido
+      if (doc.includes("-")) return false
       return /^\d{5,12}$/.test(doc)
     }
-    // RUC PY frecuente: dígitos + guion + dígito verificador (ej: 80012345-6). Permitimos también sin guion.
-    return /^(\d{6,10}-?\d)$/.test(doc)
+
+    if (type === "ruc") {
+      // RUC: debe incluir guion y cumplir patrón (ej: 80012345-6)
+      return /^\d{6,10}-\d$/.test(doc)
+    }
+
+    return true
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +132,7 @@ export function ClientEdit({
 
             {/* Tipo de documento */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="documentType" className="text-right">
+              <Label htmlFor="documentType" className="">
                 Tipo de documento
               </Label>
               <div className="col-span-3">

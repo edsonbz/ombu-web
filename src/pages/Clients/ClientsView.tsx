@@ -25,13 +25,6 @@ import { useNavigate } from "react-router-dom"
 import { ClientEdit } from "./ClientEdit"
 import { ClientNew } from "./ClientNew"
 import { Input } from "@/components/ui/input"
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
 
 export function ClientsView() {
   const navigate = useNavigate()
@@ -41,50 +34,7 @@ export function ClientsView() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-
   const [search, setSearch] = useState("")
-
-  const columns: ColumnDef<Client & { document?: string | null; documentType?: string | null }>[] = [
-    { accessorKey: "name", header: "Nombre" },
-    { accessorKey: "address", header: "Dirección" },
-    { accessorKey: "email", header: "Email" },
-    { accessorKey: "phone", header: "Teléfono" },
-    { accessorKey: "documentType", header: "Tipo Doc", cell: ({ row }) => (row.original as any).documentType ? String((row.original as any).documentType).toUpperCase() : "-" },
-    { accessorKey: "document", header: "Documento", cell: ({ row }) => (row.original as any).document ?? "-" },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Pencil className="cursor-pointer" onClick={() => handleEditClick(row.original as Client)} />
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary text-tertiary">
-              <p>Editar</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-  ]
-
-  const data = clients.filter((c) => {
-    const q = search.toLowerCase().trim()
-    if (!q) return true
-    const name = (c.name || "").toLowerCase()
-    const doc = ((c as any).document || "").toLowerCase()
-    return name.includes(q) || doc.includes(q)
-  }) as (Client & { document?: string | null; documentType?: string | null })[]
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  })
 
   const goBack = () => navigate("/home")
 
@@ -92,11 +42,8 @@ export function ClientsView() {
     const fetchClients = async () => {
       try {
         setLoading(true)
-        const resp = await getClients() as { data?: Client[]; clients?: Client[] } | Client[]
-        const list = Array.isArray(resp)
-          ? resp
-          : (resp.data || resp.clients) || []
-        setClients(list as Client[])
+        const clients = await getClients()
+        setClients(clients)
       } catch (err: any) {
         navigate("/home")
         setLoading(false)
@@ -119,30 +66,31 @@ export function ClientsView() {
     setClients((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
   }
 
-  const handleAddClient = (created: any) => {
-    const entity: Client | undefined = (created?.id && created)
-      || created?.data
-      || created?.client
-      || created?.result
-
-    if (!entity || !entity.id) {
-      console.warn("Crear cliente - respuesta inesperada:", created)
-      toast.error("No pude leer el cliente creado (respuesta inesperada del API)")
+  const handleAddClient = (created: Client) => {
+    if (!created.id) {
+      toast.error("El cliente creado no tiene ID. No se agregará a la tabla.")
       return
     }
-
-    setClients((prev) => [...prev, entity])
+    setClients((prev) => [...prev, created])
   }
 
   const handleDeleteClient = (id: string) => {
     setClients((prev) => prev.filter((c) => c.id !== id))
   }
 
+  const filteredClients = clients.filter((c) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    const name = (c.name || "").toLowerCase()
+    const doc = ((c as any).document || "").toLowerCase()
+    return name.includes(q) || doc.includes(q)
+  })
+
   return loading ? (
     <Spinner />
   ) : (
     <div className="bg-tertiary p-4 rounded-lg">
-      <div className="flex flex-col gap-3 mb-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex justify-between items-center gap-1 mb-6">
         <div className="flex justify-start items-center text-secondary">
           <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
             Clientes
@@ -150,12 +98,12 @@ export function ClientsView() {
           <ChevronRight className="w-6 h-6 self-center text-secondary" />
           <span className="text-xl">Gestiona tus clientes</span>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex items-center gap-3">
           <Input
             placeholder="Buscar por cliente (nombre)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-80"
+            className="w-64"
           />
           <TooltipProvider>
             <Tooltip>
@@ -170,38 +118,56 @@ export function ClientsView() {
         </div>
       </div>
 
-      <div className="bg-tertiary border border-baseBorder rounded-lg">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="text-secondary font-bold text-base">
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {error ? error : "Sin resultados"}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <Table className="bg-tertiary border border-baseBorder rounded-lg">
+        <TableCaption>Lista de clientes registrados en el sistema.</TableCaption>
+        <TableHeader>
+          <TableRow className="text-secondary font-bold text-base">
+            <TableHead>Nombre</TableHead>
+            <TableHead>Dirección</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Teléfono</TableHead>
+                        <TableHead>Tipo Doc</TableHead>
+
+            <TableHead>Documento</TableHead>
+            <TableHead className="text-center"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredClients.map((client) => (
+            <TableRow key={client.id}>
+              <TableCell>{client.name}</TableCell>
+              <TableCell>{client.address}</TableCell>
+              <TableCell>{client.email}</TableCell>
+              <TableCell>{client.phone}</TableCell>
+              <TableCell>{(client as any).documentType ? String((client as any).documentType).toUpperCase() : "-"}</TableCell>
+              <TableCell>{(client as any).document ?? "-"}</TableCell>
+              <TableCell className="flex justify-center items-center">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Pencil
+                        className="cursor-pointer"
+                        onClick={() => handleEditClick(client)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary text-tertiary">
+                      <p>Editar</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+            </TableRow>
+          ))}
+          {error && (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center text-red-500">
+                {error}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+        <TableFooter />
+      </Table>
 
       {selectedClient && (
         <ClientEdit
