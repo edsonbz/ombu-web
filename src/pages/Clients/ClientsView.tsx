@@ -92,10 +92,10 @@ export function ClientsView() {
     const fetchClients = async () => {
       try {
         setLoading(true)
-        const resp = await getClients()
+        const resp = await getClients() as { data?: Client[]; clients?: Client[] } | Client[]
         const list = Array.isArray(resp)
           ? resp
-          : (resp && (resp.data || (resp as any).clients)) || []
+          : (resp.data || resp.clients) || []
         setClients(list as Client[])
       } catch (err: any) {
         navigate("/home")
