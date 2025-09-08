@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import {
@@ -22,8 +23,21 @@ import { Client } from "@/types/clients"
 import { Product } from "@/types/products"
 import { toast } from "sonner"
 import { createSale } from "@/api/sales"
-import { CloudCog, Trash2 } from "lucide-react"
-
+import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 
 type Props = {
@@ -40,6 +54,9 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
   const [loading, setLoading] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
 
+  const clientTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const [clientTriggerWidth, setClientTriggerWidth] = useState<number | null>(null)
+
   useEffect(() => {
     if (open) {
       fetchData()
@@ -47,6 +64,17 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
       setItems([{ productId: "", quantity: 1 }])
     }
   }, [open])
+
+  useEffect(() => {
+    const measure = () => {
+      if (clientTriggerRef.current) {
+        setClientTriggerWidth(clientTriggerRef.current.offsetWidth)
+      }
+    }
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
+  }, [])
 
   const fetchData = async () => {
     try {
@@ -165,21 +193,71 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
         <form onSubmit={handleSubmit}>
           <DialogHeader className="mb-4">
             <DialogTitle className="text-center">Registrar Venta</DialogTitle>
+            <DialogDescription className="sr-only">
+              Completa los datos para registrar una venta
+            </DialogDescription>
           </DialogHeader>
           <div className="w-full flex flex-col justify-between">
             {/* Cliente */}
+            {/* We use a ref to ensure the PopoverContent width matches the trigger exactly and to avoid Radix CSS var issues inside Dialog */}
             <div className="mb-2 mt-2 flex flex-col gap-2">
               <Label>Cliente</Label>
-              <Select value={selectedClient} onValueChange={setSelectedClient}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar" />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover modal={false}>
+                <PopoverTrigger asChild>
+                  <button
+                    ref={clientTriggerRef}
+                    type="button"
+                    role="combobox"
+                    aria-expanded={!!selectedClient}
+                    className="w-full justify-between inline-flex items-center whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    {selectedClient
+                      ? clients.find((c) => c.id === selectedClient)?.name
+                      : "Seleccionar cliente"}
+                    <ChevronsUpDown className="ml-2 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  sideOffset={4}
+                  align="start"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                  className="z-[70] p-0 w-full"
+                  style={{ width: clientTriggerWidth ?? undefined, minWidth: clientTriggerWidth ?? undefined }}
+                >
+                  <Command>
+                    <CommandInput placeholder="Buscar por nombre..." className="h-9" />
+                    <CommandList>
+                      <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+                      <CommandGroup>
+                        {clients.map((c) => (
+                          <CommandItem
+                            key={c.id}
+                            value={c.name}
+                            keywords={[c.name]}
+                            onSelect={() => {
+                              setSelectedClient(c.id)
+                            }}
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-medium">{c.name}</span>
+                              {c.email ? (
+                                <span className="text-xs opacity-70">{c.email}</span>
+                              ) : null}
+                            </div>
+                            <Check
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                selectedClient === c.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             {/* Método de Pago */}
             <div className="flex flex-col gap-2 mb-2 mt-2">
