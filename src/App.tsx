@@ -7,9 +7,11 @@ import { Routing } from './routes';
 function App() {
   return (
     <AuthProvider>
-      <Routing />
-      <LightsBackground children={undefined}/>
-      <Toaster richColors closeButton />
+      <div className="relative min-h-screen">
+        <LightsBackground children={undefined} />
+        <Routing />
+        <Toaster richColors closeButton />
+      </div>
     </AuthProvider>
   );
 }
