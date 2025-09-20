@@ -107,13 +107,13 @@ export function ProductsView() {
     Solicitudes
   </Link>.
 </TableCaption>
-        <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+        <TableHeader className="font-bold text-base bg-primary rounded-lg">
           <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Descripción</TableHead>
-            <TableHead className="text-center">Precio</TableHead>
-            <TableHead className="text-center">Stock</TableHead>
-            <TableHead className="text-center"></TableHead>
+            <TableHead className="text-tertiary">Nombre</TableHead>
+            <TableHead className="text-tertiary">Descripción</TableHead>
+            <TableHead className="text-center text-tertiary">Precio</TableHead>
+            <TableHead className="text-center text-tertiary">Stock</TableHead>
+            <TableHead className="text-center text-tertiary"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

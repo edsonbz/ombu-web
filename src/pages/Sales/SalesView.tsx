@@ -85,13 +85,13 @@ export function SalesView() {
 
             <Table className="bg-tertiary border border-baseBorder rounded-lg">
                 <TableCaption>Lista de ventas realizadas a clientes.</TableCaption>
-                <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+                <TableHeader className="font-bold text-base bg-primary rounded-lg">
                     <TableRow>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead></TableHead>
+                        <TableHead className="text-tertiary">Cliente</TableHead>
+                        <TableHead className="text-tertiary">Fecha</TableHead>
+                        <TableHead className="text-tertiary">Total</TableHead>
+                        <TableHead className="text-tertiary">Estado</TableHead>
+                        <TableHead className="text-tertiary"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
