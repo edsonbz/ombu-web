@@ -121,7 +121,7 @@ export function ClientsView() {
       <Table className="bg-tertiary border border-baseBorder rounded-lg">
         <TableCaption>Lista de clientes registrados en el sistema.</TableCaption>
         <TableHeader>
-          <TableRow className="text-secondary font-bold text-base">
+          <TableRow className="text-secondary font-bold text-base bg-primary">
             <TableHead>Nombre</TableHead>
             <TableHead>Dirección</TableHead>
             <TableHead>Email</TableHead>
