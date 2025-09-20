@@ -122,7 +122,7 @@ export function RestockView() {
                 </TooltipProvider>
             </div>
 
-            <Table className="bg-tertiary border border-baseBorder rounded-lg">
+            <Table className="bg-tertiary border border-primary rounded-lg">
                 <TableCaption>
                     Lista de solicitudes. Las ya facturadas puedes ver con más detalles en{" "}
                     <Link className="text-secondary font-bold" to={"/purchases-invoice"}>

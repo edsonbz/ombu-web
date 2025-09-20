@@ -83,7 +83,7 @@ export function SalesView() {
                 </TooltipProvider>
             </div>
 
-            <Table className="bg-tertiary border border-baseBorder rounded-lg">
+            <Table className="bg-tertiary border border-primary rounded-lg">
                 <TableCaption>Lista de ventas realizadas a clientes.</TableCaption>
                 <TableHeader className="font-bold text-base bg-primary rounded-lg">
                     <TableRow>

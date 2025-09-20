@@ -192,7 +192,7 @@ export function SettingsView() {
                 {loading ? (
                     <Spinner />
                 ) : (
-                    <Table className="bg-tertiary border border-baseBorder rounded-lg">
+                    <Table className="bg-tertiary border border-primary rounded-lg">
                         <TableCaption>Usuarios del sistema.</TableCaption>
                         <TableHeader>
                             <TableRow>
