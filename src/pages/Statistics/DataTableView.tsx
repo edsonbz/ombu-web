@@ -128,7 +128,7 @@ const chartConfig = {
   },
   desktop: {
     label: "Desktop",
-    color: "#854b99",
+    color: "#72823D",
   },
   mobile: {
     label: "Mobile",
@@ -219,12 +219,12 @@ export function DataTableView() {
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="#854b99"
+                  stopColor="#72823D"
                   stopOpacity={1.0}
                 />
                 <stop
                   offset="95%"
-                  stopColor="#854b99"
+                  stopColor="#72823D"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -281,7 +281,7 @@ export function DataTableView() {
               dataKey="desktop"
               type="natural"
               fill="url(#fillDesktop)"
-              stroke="#854b99"
+              stroke="#72823D"
               stackId="a"
             />
           </AreaChart>

@@ -53,6 +53,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
   const [items, setItems] = useState<{ productId: string; quantity: number }[]>([])
   const [loading, setLoading] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
+  const [clientQuery, setClientQuery] = useState("")
 
   const clientTriggerRef = useRef<HTMLButtonElement | null>(null)
   const [clientTriggerWidth, setClientTriggerWidth] = useState<number | null>(null)
@@ -88,6 +89,8 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
       toast.error("Error al cargar clientes o productos")
     }
   }
+
+  const filteredClients = clients.filter((c) => c.name.toLowerCase().includes(clientQuery.toLowerCase()))
 
   const addItem = () => {
     if (items.length >= 5) return toast.warning("Máximo 5 productos por venta")
@@ -226,17 +229,18 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
                   style={{ width: clientTriggerWidth ?? undefined, minWidth: clientTriggerWidth ?? undefined }}
                 >
                   <Command>
-                    <CommandInput placeholder="Buscar por nombre..." className="h-9" />
+                    <CommandInput placeholder="Buscar por nombre..." className="h-9" value={clientQuery} onValueChange={setClientQuery} />
                     <CommandList>
                       <CommandEmpty>No se encontraron resultados.</CommandEmpty>
                       <CommandGroup>
-                        {clients.map((c) => (
+                        {filteredClients.map((c) => (
                           <CommandItem
                             key={c.id}
                             value={c.name}
                             keywords={[c.name]}
                             onSelect={() => {
                               setSelectedClient(c.id)
+                              setClientQuery("")
                             }}
                           >
                             <div className="flex flex-col">
