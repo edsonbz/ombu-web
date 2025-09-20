@@ -107,8 +107,8 @@ export function ProductsView() {
     Solicitudes
   </Link>.
 </TableCaption>
-        <TableHeader>
-          <TableRow className="text-secondary font-bold text-base">
+        <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+          <TableRow>
             <TableHead>Nombre</TableHead>
             <TableHead>Descripción</TableHead>
             <TableHead className="text-center">Precio</TableHead>

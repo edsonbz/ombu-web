@@ -129,8 +129,8 @@ export function RestockView() {
                         Facturas
                     </Link>
                 </TableCaption>
-                <TableHeader>
-                    <TableRow className="text-secondary font-bold text-base">
+                <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+                    <TableRow>
                         <TableHead>Producto</TableHead>
                         <TableHead>Proveedor</TableHead>
                         <TableHead className="text-center">Cantidad</TableHead>

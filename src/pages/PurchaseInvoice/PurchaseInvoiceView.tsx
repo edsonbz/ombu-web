@@ -60,8 +60,8 @@ export function PurchaseInvoiceView() {
                 </div>
                 <Table className="bg-tertiary border border-baseBorder rounded-lg">
                     <TableCaption>Lista de facturas generadas por reposición.</TableCaption>
-                    <TableHeader>
-                        <TableRow className="text-secondary font-bold text-base">
+                    <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+                        <TableRow>
                             <TableHead>Proveedor</TableHead>
                             <TableHead>Producto</TableHead>
                             <TableHead>Total</TableHead>

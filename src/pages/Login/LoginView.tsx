@@ -121,7 +121,7 @@ export default function LoginView() {
 
                                     <Button
                                         type="submit"
-                                        className="w-full bg-secondary hover:bg-tertiary flex items-center justify-center"
+                                        className="w-full bg-secondary hover:bg-tertiary hover:text-secondary flex items-center justify-center"
                                         disabled={loading}
                                     >
                                         {loading ? <Spinner inline /> : "Iniciar sesión"}

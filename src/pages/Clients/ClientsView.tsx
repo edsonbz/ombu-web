@@ -120,14 +120,13 @@ export function ClientsView() {
 
       <Table className="bg-tertiary border border-baseBorder rounded-lg">
         <TableCaption>Lista de clientes registrados en el sistema.</TableCaption>
-        <TableHeader>
-          <TableRow className="text-secondary font-bold text-base bg-primary">
+        <TableHeader className="text-tertiary font-bold text-base bg-primary rounded-lg">
+          <TableRow >
             <TableHead>Nombre</TableHead>
             <TableHead>Dirección</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Teléfono</TableHead>
-                        <TableHead>Tipo Doc</TableHead>
-
+            <TableHead>Tipo Doc</TableHead>
             <TableHead>Documento</TableHead>
             <TableHead className="text-center"></TableHead>
           </TableRow>
