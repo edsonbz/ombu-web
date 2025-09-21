@@ -195,7 +195,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
             {/* We use a ref to ensure the PopoverContent width matches the trigger exactly and to avoid Radix CSS var issues inside Dialog */}
             <div className="mb-2 mt-2 flex flex-col gap-2">
               <Label>Cliente</Label>
-              <Popover open={clientComboOpen} onOpenChange={setClientComboOpen}>
+              <Popover modal={false} open={clientComboOpen} onOpenChange={setClientComboOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -209,7 +209,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
                     <ChevronsUpDown className="opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[420px] max-w-[90vw] p-0">
+                <PopoverContent className="z-50 w-[420px] max-w-[90vw] p-0">
                   <Command>
                     <CommandInput
                       placeholder="Buscar por nombre..."
