@@ -79,7 +79,6 @@ import { getReportsData } from "@/api/reports";
   
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-3 lg:grid-cols-3">
           {reports.map((item, index) => (
             <Card
               key={index}
@@ -100,7 +99,6 @@ import { getReportsData } from "@/api/reports";
               </CardContent>
             </Card>
           ))}
-        </div>
       </div>
     );
   }

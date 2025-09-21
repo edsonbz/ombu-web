@@ -14,8 +14,8 @@ export default function HomeView() {
           <LightsBackground children={undefined}/>
             <div className="flex flex-col gap-4 p-3">
                 <ServicesCardView/>
-                <br />
-                <ReportsCards/>
+                {/* <br /> */}
+                {/* <ReportsCards/> */}
                 {/* <StatisticsView /> */}
                 {/* <DataTableView /> */}
             </div>
