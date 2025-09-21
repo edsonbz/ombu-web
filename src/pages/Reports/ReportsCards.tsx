@@ -83,20 +83,20 @@ import { getReportsData } from "@/api/reports";
           {reports.map((item, index) => (
             <Card
               key={index}
-              className="rounded-xl border border-primary/10 bg-tertiary/90 backdrop-blur shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-transform duration-200"
+              className="rounded-xl border border-primary/10 bg-primary/90 backdrop-blur shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-transform duration-200"
             >
               <CardHeader className="pb-2">
                 <CardTitle>
-                  <div className="flex items-center gap-3 text-secondary">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <item.icon className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-3 text-tertiary">
+                    <div className="h-10 w-10 rounded-full bg-tertiary/10 flex items-center justify-center">
+                      <item.icon className="h-5 w-5 text-tertiary" />
                     </div>
                     <span className="text-base font-semibold">{item.title}</span>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-1">
-                <CardDescription className="text-2xl font-extrabold text-primary tracking-tight">
+                <CardDescription className="text-2xl font-extrabold text-tertiary tracking-tight">
                   {item.value}
                 </CardDescription>
               </CardContent>
