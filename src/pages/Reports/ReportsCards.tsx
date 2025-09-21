@@ -78,27 +78,31 @@ import { getReportsData } from "@/api/reports";
     }
   
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           {reports.map((item, index) => (
             <Card
               key={index}
-              className="max-w-sm w-full mx-auto text-center hover:shadow-xl hover:scale-105 transform transition-all duration-300"
+              className="rounded-xl border border-primary/10 bg-tertiary/90 backdrop-blur shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-transform duration-200"
             >
-              <CardHeader>
+              <CardHeader className="pb-2">
                 <CardTitle>
-                  <div className="flex justify-center items-center gap-2 text-secondary">
-                    <item.icon className="w-5 h-5" />
-                    {item.title}
+                  <div className="flex items-center gap-3 text-secondary">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <item.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-base font-semibold">{item.title}</span>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <CardDescription className="text-lg font-bold text-primary">
+              <CardContent className="pt-1">
+                <CardDescription className="text-2xl font-extrabold text-primary tracking-tight">
                   {item.value}
                 </CardDescription>
               </CardContent>
             </Card>
           ))}
+        </div>
       </div>
     );
   }

@@ -1,21 +1,5 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "@/api/products";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ChevronRight} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Product } from "@/types/products";
@@ -60,14 +44,12 @@ export function ReportsView() {
   return loading ? (
     <Spinner/>
   ) : (
-    <div className="bg-tertiary p-4 rounded-lg">
-      <div className="flex justify-between items-center gap-1 mb-6">
-        <div className="flex justify-start items-center text-secondary">
-          <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
-            Informes
-          </span>
+    <div className="bg-tertiary/90 p-6 rounded-xl max-w-7xl mx-auto">
+      <div className="flex justify-between items-center gap-3 mb-8">
+        <div className="flex items-center gap-2 text-secondary">
+          <span className="text-2xl font-bold cursor-pointer" onClick={goBack}>Informes</span>
           <ChevronRight className="w-6 h-6 self-center text-secondary" />
-          <span className="text-xl">Visualiza tus informes</span>
+          <span className="text-2xl">Visualiza tus informes</span>
         </div>
       </div>
       <ReportsCards/>
