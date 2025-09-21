@@ -45,11 +45,11 @@ export function ReportsView() {
     <Spinner/>
   ) : (
     <div className=" p-6 rounded-xl max-w-7xl mx-auto">
-      <div className="bg-tertiary flex justify-between items-center gap-3 mb-8">
-        <div className="flex items-center gap-2 text-secondary">
-          <span className="text-2xl font-bold cursor-pointer" onClick={goBack}>Informes</span>
-          <ChevronRight className="w-6 h-6 self-center text-secondary" />
-          <span className="text-2xl">Visualiza tus informes</span>
+      <div className=" flex justify-between items-center gap-3 mb-8">
+        <div className="flex items-center gap-2 text-tertiary">
+          <span className="text-2xl font-bold cursor-pointer text-tertiary" onClick={goBack}>Informes</span>
+          <ChevronRight className="w-6 h-6 self-center text-tertiary" />
+          <span className="text-2xl text-tertiary">Visualiza tus informes</span>
         </div>
       </div>
       <ReportsCards/>

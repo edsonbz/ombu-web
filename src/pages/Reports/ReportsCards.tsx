@@ -79,7 +79,7 @@ import { getReportsData } from "@/api/reports";
   
     return (
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-3gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {reports.map((item, index) => (
             <Card
               key={index}
