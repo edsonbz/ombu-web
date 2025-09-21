@@ -181,7 +181,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="mb-4">
