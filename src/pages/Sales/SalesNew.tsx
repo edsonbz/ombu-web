@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -31,12 +31,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandDialog,
 } from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 
@@ -54,7 +50,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
   const [loading, setLoading] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
   const [clientQuery, setClientQuery] = useState("")
-  const [clientComboOpen, setClientComboOpen] = useState(false)
+  const [clientPickerOpen, setClientPickerOpen] = useState(false)
   const selectedClientName = clients.find(c => c.id === selectedClient)?.name || ""
 
 
@@ -195,58 +191,52 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
             {/* We use a ref to ensure the PopoverContent width matches the trigger exactly and to avoid Radix CSS var issues inside Dialog */}
             <div className="mb-2 mt-2 flex flex-col gap-2">
               <Label>Cliente</Label>
-              <Popover modal={false} open={clientComboOpen} onOpenChange={setClientComboOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={clientComboOpen}
-                    className="w-full justify-between"
-                  >
-                    {selectedClient
-                      ? selectedClientName
-                      : "Seleccionar cliente"}
-                    <ChevronsUpDown className="opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="z-50 w-[420px] max-w-[90vw] p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Buscar por nombre..."
-                      className="h-9"
-                      value={clientQuery}
-                      onValueChange={setClientQuery}
-                    />
-                    <CommandList>
-                      <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-                      <CommandGroup>
-                        {filteredClients.map((c) => (
-                          <CommandItem
-                            key={c.id}
-                            value={c.name}
-                            keywords={[c.name]}
-                            onSelect={() => {
-                              setSelectedClient(c.id)
-                              setClientQuery("")
-                              setClientComboOpen(false)
-                            }}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span>{c.name}</span>
-                            </div>
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                selectedClient === c.id ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={clientPickerOpen}
+                className="w-full justify-between"
+                onClick={() => setClientPickerOpen(true)}
+              >
+                {selectedClient ? selectedClientName : "Seleccionar cliente"}
+                <ChevronsUpDown className="opacity-50" />
+              </Button>
+
+              <CommandDialog modal={false} open={clientPickerOpen} onOpenChange={setClientPickerOpen}>
+                <CommandInput
+                  placeholder="Buscar por nombre..."
+                  value={clientQuery}
+                  onValueChange={setClientQuery}
+                />
+                <CommandList>
+                  <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+                  <CommandGroup>
+                    {filteredClients.map((c) => (
+                      <CommandItem
+                        key={c.id}
+                        value={c.name}
+                        keywords={[c.name]}
+                        onSelect={() => {
+                          setSelectedClient(c.id)
+                          setClientQuery("")
+                          setClientPickerOpen(false)
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{c.name}</span>
+                        </div>
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            selectedClient === c.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </CommandDialog>
 
             </div>
             {/* Método de Pago */}
