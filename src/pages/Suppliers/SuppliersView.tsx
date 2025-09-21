@@ -107,13 +107,13 @@ export function SuppliersView() {
 
                 <Table className="bg-tertiary border border-primary rounded-lg">
                     <TableCaption>Lista de proveedores registrados.</TableCaption>
-                    <TableHeader>
-                        <TableRow className="text-secondary font-bold text-base">
-                            <TableHead>Nombre</TableHead>
-                            <TableHead>Dirección</TableHead>
-                            <TableHead>Teléfono</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead></TableHead>
+                    <TableHeader className="font-bold text-base bg-primary rounded-lg">
+                        <TableRow >
+                            <TableHead className="text-secondary font-bold text-base">Nombre</TableHead>
+                            <TableHead className="text-secondary font-bold text-base">Dirección</TableHead>
+                            <TableHead className="text-secondary font-bold text-base">Teléfono</TableHead>
+                            <TableHead className="text-secondary font-bold text-base">Email</TableHead>
+                            <TableHead className="text-secondary font-bold text-base"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
