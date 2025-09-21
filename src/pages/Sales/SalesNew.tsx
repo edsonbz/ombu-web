@@ -24,15 +24,6 @@ import { Product } from "@/types/products"
 import { toast } from "sonner"
 import { createSale } from "@/api/sales"
 import { Check, ChevronsUpDown, Trash2 } from "lucide-react"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandDialog,
-} from "@/components/ui/command"
 import { cn } from "@/lib/utils"
 
 
@@ -191,53 +182,56 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
             {/* We use a ref to ensure the PopoverContent width matches the trigger exactly and to avoid Radix CSS var issues inside Dialog */}
             <div className="mb-2 mt-2 flex flex-col gap-2">
               <Label>Cliente</Label>
-              <Button
-                type="button"
-                variant="outline"
-                role="combobox"
-                aria-expanded={clientPickerOpen}
-                className="w-full justify-between"
-                onClick={() => setClientPickerOpen(true)}
-              >
-                {selectedClient ? selectedClientName : "Seleccionar cliente"}
-                <ChevronsUpDown className="opacity-50" />
-              </Button>
+              <div className="relative">
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={clientPickerOpen}
+                  className="w-full justify-between"
+                  onClick={() => setClientPickerOpen((v) => !v)}
+                >
+                  {selectedClient ? selectedClientName : "Seleccionar cliente"}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
 
-              <CommandDialog modal={false} open={clientPickerOpen} onOpenChange={setClientPickerOpen}>
-                <CommandInput
-                  placeholder="Buscar por nombre..."
-                  value={clientQuery}
-                  onValueChange={setClientQuery}
-                />
-                <CommandList>
-                  <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-                  <CommandGroup>
-                    {filteredClients.map((c) => (
-                      <CommandItem
-                        key={c.id}
-                        value={c.name}
-                        keywords={[c.name]}
-                        onSelect={() => {
-                          setSelectedClient(c.id)
-                          setClientQuery("")
-                          setClientPickerOpen(false)
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span>{c.name}</span>
+                {clientPickerOpen && (
+                  <div className="absolute left-0 right-0 z-[999] mt-2 rounded-md border bg-popover p-2 shadow-md">
+                    <div className="mb-2">
+                      <Input
+                        placeholder="Buscar por nombre..."
+                        value={clientQuery}
+                        onChange={(e) => setClientQuery(e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+
+                    <div className="max-h-56 overflow-auto">
+                      {filteredClients.length === 0 ? (
+                        <div className="px-2 py-3 text-sm text-muted-foreground">
+                          No se encontraron resultados.
                         </div>
-                        <Check
-                          className={cn(
-                            "ml-auto",
-                            selectedClient === c.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </CommandDialog>
-
+                      ) : (
+                        filteredClients.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedClient(c.id)
+                              setClientQuery("")
+                              setClientPickerOpen(false)
+                            }}
+                            className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-muted/60"
+                          >
+                            <span>{c.name}</span>
+                            <Check className={cn("h-4 w-4", selectedClient === c.id ? "opacity-100" : "opacity-0")} />
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             {/* Método de Pago */}
             <div className="flex flex-col gap-2 mb-2 mt-2">
