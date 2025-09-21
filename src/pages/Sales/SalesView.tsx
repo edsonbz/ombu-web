@@ -64,7 +64,7 @@ export function SalesView() {
     ) : (
         <div className="bg-tertiary p-4 rounded-lg">
             <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center ">
+                 <div className="flex items-center gap-2">
                     <span className="text-xl font-bold cursor-pointer" onClick={goBack}>
                         Ventas
                     </span>

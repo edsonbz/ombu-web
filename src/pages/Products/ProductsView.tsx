@@ -42,25 +42,31 @@ export function ProductsView() {
 
   const goBack = () => navigate("/home");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const products = await getProducts();
-        setPerfumes(products);
-      } catch (err: any) {
-        navigate("/home");
-        setLoading(false);
-        toast.error("Error al obtener los productos");
-        console.error("Error al obtener los productos:", err);
-        setError(err.message || "Error desconocido");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const products = await getProducts()
+      setPerfumes(products)
+    } catch (err: any) {
+      navigate("/home")
+      setLoading(false)
+      toast.error("Error al obtener los productos")
+      console.error("Error al obtener los productos:", err)
+      setError(err.message || "Error desconocido")
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    const handler = () => { fetchProducts() }
+    window.addEventListener('products:refresh', handler)
+    return () => window.removeEventListener('products:refresh', handler)
+  }, [])
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);

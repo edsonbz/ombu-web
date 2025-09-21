@@ -54,9 +54,9 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
   const [loading, setLoading] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
   const [clientQuery, setClientQuery] = useState("")
+  const [clientComboOpen, setClientComboOpen] = useState(false)
+  const selectedClientName = clients.find(c => c.id === selectedClient)?.name || ""
 
-  const clientTriggerRef = useRef<HTMLButtonElement | null>(null)
-  const [clientTriggerWidth, setClientTriggerWidth] = useState<number | null>(null)
 
   useEffect(() => {
     if (open) {
@@ -66,16 +66,6 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
     }
   }, [open])
 
-  useEffect(() => {
-    const measure = () => {
-      if (clientTriggerRef.current) {
-        setClientTriggerWidth(clientTriggerRef.current.offsetWidth)
-      }
-    }
-    measure()
-    window.addEventListener("resize", measure)
-    return () => window.removeEventListener("resize", measure)
-  }, [])
 
   const fetchData = async () => {
     try {
@@ -205,31 +195,28 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
             {/* We use a ref to ensure the PopoverContent width matches the trigger exactly and to avoid Radix CSS var issues inside Dialog */}
             <div className="mb-2 mt-2 flex flex-col gap-2">
               <Label>Cliente</Label>
-              <Popover modal={false}>
+              <Popover open={clientComboOpen} onOpenChange={setClientComboOpen}>
                 <PopoverTrigger asChild>
-                  <button
-                    ref={clientTriggerRef}
-                    type="button"
+                  <Button
+                    variant="outline"
                     role="combobox"
-                    aria-expanded={!!selectedClient}
-                    className="w-full justify-between inline-flex items-center whitespace-nowrap rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    aria-expanded={clientComboOpen}
+                    className="w-full justify-between"
                   >
                     {selectedClient
-                      ? clients.find((c) => c.id === selectedClient)?.name
+                      ? selectedClientName
                       : "Seleccionar cliente"}
-                    <ChevronsUpDown className="ml-2 opacity-50" />
-                  </button>
+                    <ChevronsUpDown className="opacity-50" />
+                  </Button>
                 </PopoverTrigger>
-                <PopoverContent
-                  sideOffset={4}
-                  align="start"
-                  onOpenAutoFocus={(e) => e.preventDefault()}
-                  onCloseAutoFocus={(e) => e.preventDefault()}
-                  className="z-[70] p-0 w-full"
-                  style={{ width: clientTriggerWidth ?? undefined, minWidth: clientTriggerWidth ?? undefined }}
-                >
+                <PopoverContent className="w-[420px] max-w-[90vw] p-0">
                   <Command>
-                    <CommandInput placeholder="Buscar por nombre..." className="h-9" value={clientQuery} onValueChange={setClientQuery} />
+                    <CommandInput
+                      placeholder="Buscar por nombre..."
+                      className="h-9"
+                      value={clientQuery}
+                      onValueChange={setClientQuery}
+                    />
                     <CommandList>
                       <CommandEmpty>No se encontraron resultados.</CommandEmpty>
                       <CommandGroup>
@@ -241,17 +228,15 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
                             onSelect={() => {
                               setSelectedClient(c.id)
                               setClientQuery("")
+                              setClientComboOpen(false)
                             }}
                           >
-                            <div className="flex flex-col">
-                              <span className="font-medium">{c.name}</span>
-                              {c.email ? (
-                                <span className="text-xs opacity-70">{c.email}</span>
-                              ) : null}
+                            <div className="flex items-center gap-2">
+                              <span>{c.name}</span>
                             </div>
                             <Check
                               className={cn(
-                                "ml-auto h-4 w-4",
+                                "ml-auto",
                                 selectedClient === c.id ? "opacity-100" : "opacity-0"
                               )}
                             />
@@ -262,6 +247,7 @@ export function SalesNew({ open, onOpenChange, onSubmit }: Props) {
                   </Command>
                 </PopoverContent>
               </Popover>
+
             </div>
             {/* Método de Pago */}
             <div className="flex flex-col gap-2 mb-2 mt-2">

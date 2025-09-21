@@ -58,6 +58,7 @@ export function NewProductView({
     try {
       setLoading(true)
       await addProduct(newProduct)
+      window.dispatchEvent(new CustomEvent('products:refresh'))
       onOpenChange(false)
       setLoading(false)
       toast.success("Producto agregado correctamente")

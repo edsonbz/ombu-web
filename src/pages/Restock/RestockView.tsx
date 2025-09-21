@@ -123,12 +123,12 @@ export function RestockView() {
             </div>
 
             <Table className="bg-tertiary border border-primary rounded-lg">
-                <TableCaption>
+                {/* <TableCaption>
                     Lista de solicitudes. Las ya facturadas puedes ver con más detalles en{" "}
                     <Link className="text-secondary font-bold" to={"/purchases-invoice"}>
                         Facturas
                     </Link>
-                </TableCaption>
+                </TableCaption> */}
                 <TableHeader className="font-bold text-base bg-primary rounded-lg">
                     <TableRow>
                         <TableHead className="text-tertiary">Producto</TableHead>

@@ -59,13 +59,13 @@ export function ServicesCardView() {
       url: "/sales",
       disabled: false,
     },
-    {
-      title: "Informes",
-      description: "Visualiza tus informes",
-      icon: ChartColumnDecreasing,
-      url: "/reports",
-      disabled: false,
-    },
+    // {
+    //   title: "Informes",
+    //   description: "Visualiza tus informes",
+    //   icon: ChartColumnDecreasing,
+    //   url: "/reports",
+    //   disabled: false,
+    // },
     {
       title: "Configuraciones",
       description: "Gestiona tus configuraciones",
